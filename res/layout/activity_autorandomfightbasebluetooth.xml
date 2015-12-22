@@ -49,16 +49,6 @@
             android:src="@drawable/icon_neigong_038" />
     </LinearLayout>
 
-    <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="16dp"
-        android:layout_toRightOf="@+id/linearLayout1"
-        android:ems="10"
-        android:text="AutoCompleteTextView" />
-
     <Button
         android:id="@+id/startgame1"
         android:layout_width="wrap_content"
@@ -67,5 +57,16 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="18dp"
         android:text="开始游戏" />
+
+    <TextView
+        android:id="@+id/autorandombluetoothresultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="18dp"
+        android:layout_toRightOf="@+id/linearLayout1"
+        android:ems="10"
+        android:text="000" />
 
 </RelativeLayout>

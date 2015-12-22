@@ -232,13 +232,12 @@ public class BluetoothService {
          * 
          */
         public void run() {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[8192];
             int bytes;
-
             while (true) {//读
                 try {
                     bytes = mmInStream.read(buffer);
-                    myHandler.obtainMessage(FightBaseBluetoothActivity.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
+                    myHandler.obtainMessage(AutoRandomFightBaseBluetooth.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
                     .sendToTarget();
                 } catch (IOException e) {
                     e.printStackTrace();

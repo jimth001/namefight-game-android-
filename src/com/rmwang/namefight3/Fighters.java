@@ -346,9 +346,14 @@ public class Fighters implements Runnable{
 		@Override
 		public void handleMessage(android.os.Message msg) {
 			 switch (msg.what){
-	            case 1:
+	            case 1://姓名
 	                break;
-	            
+	            case 2://战斗描述
+	            	break;
+	            case 3://战斗结束标志
+	            	break;
+	            case 4://
+	            	break;
 	            default:
 	            		break;
 	            }
