@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/edit_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textview1"
+        android:layout_marginTop="46dp"
+        android:ems="10" >
+    </EditText>
+
+   <EditText
+        android:id="@+id/edit_text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textview1"
+        android:ems="10"
+         >
+
+
+    </EditText>
+
+    <Button
+        android:id="@+id/startwithcomputer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/edit_text2"
+        android:layout_alignParentRight="true"
+        android:text="开始游戏" />
+
+    <TextView
+        android:id="@+id/textview1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="14dp"
+        android:text="请在下方输入框中输入玩家一和玩家二的名字："
+        android:textColor="#FF0000"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/resulttextview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/edit_text2"
+        android:layout_marginTop="16dp"
+        android:scrollbars="vertical"
+        android:textSize="14sp"
+        android:text="游戏说明：输入名字后，点击开始即可" />
+
+</RelativeLayout>
