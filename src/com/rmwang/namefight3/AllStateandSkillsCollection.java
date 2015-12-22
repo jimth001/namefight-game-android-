@@ -17,8 +17,8 @@ public class AllStateandSkillsCollection {
 		allSkills.add(new Skill(6, Skill.neigong, 5, 30, Skill.nil, Skill.nil, Skill.nil, 3, 1, "太玄神功", 1, "",100));
 		//id，类型，持续时间，名称，描述
 		allStates.add(new State(1,State.debuf,2,"内伤","持续掉血，每回合%2"));
-		allStates.add(new State(2,State.buff,10,"九阳真气","提高防御15%，每回合受到攻击对对方造成反震伤害"));
-		allStates.add(new State(3,State.buff,10,"太玄真气","提高伤害15%，每回合持续回血回内5%"));
+		allStates.add(new State(2,State.buff,3,"九阳真气","提高防御15%，每回合受到攻击对对方造成反震伤害"));
+		allStates.add(new State(3,State.buff,3,"太玄真气","提高伤害15%，每回合持续回血回内5%"));
 		allStates.add(new State(4,State.debuf,1,"缓速","身法减半"));
 		allStates.add(new State(5,State.buff,State.forever,"主角光环","提高全属性15%"));
 	}

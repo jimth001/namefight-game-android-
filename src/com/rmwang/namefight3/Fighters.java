@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
+//git@github.com:jimth001/namefight-game-android-.git
 public class Fighters implements Runnable{
 	private float bili;//臂力
 	private float wuxing;//悟性
@@ -119,15 +119,17 @@ public class Fighters implements Runnable{
 			if(timer1>=maxspeed) {
 				timer1-=maxspeed;
 				fightDescriptionBuffer.append(oneRound(this, p2,counter));
-				this.tbuff_refresh(fightDescriptionBuffer);//刷新状态
-				p2.tbuff_refresh(fightDescriptionBuffer);
+				this.tbuff_refresh(fightDescriptionBuffer,this);//刷新状态
+				p2.tbuff_refresh(fightDescriptionBuffer,p2);
 				counter++;
 			}
+			result=judgeEnd(p2);
+			if(result!=0) break;
 			if(timer2>=maxspeed){
 				timer2-=maxspeed;
 				fightDescriptionBuffer.append(oneRound(p2, this,counter));
-				p2.tbuff_refresh(fightDescriptionBuffer);
-				this.tbuff_refresh(fightDescriptionBuffer);
+				p2.tbuff_refresh(fightDescriptionBuffer,p2);
+				this.tbuff_refresh(fightDescriptionBuffer,this);
 				counter++;
 			}
 			result=judgeEnd(p2);
@@ -148,35 +150,38 @@ public class Fighters implements Runnable{
 	public StringBuffer oneRound(Fighters attacker,Fighters defender,int counter){
 		StringBuffer oneRoundDescriptionbBuffer=new StringBuffer("");
 		oneRoundDescriptionbBuffer.append("第"+counter+"回合："+'\n');
-		for (int i = 0; i < tbuffs.size(); i++) {//回合开始，先check states
-			checkbuff(5, tbuffs.get(i).id,0,oneRoundDescriptionbBuffer,attacker,defender);
+		for (int i = 0; i < attacker.tbuffs.size(); i++) {//回合开始，先check states
+			attacker.checkbuff(5, attacker.tbuffs.get(i).id,0,oneRoundDescriptionbBuffer,attacker,defender);
 		}
+		/*for (int i = 0; i < attacker.tbuffs.size(); i++) {//回合开始，先check states
+			attacker.checkbuff(5, attacker.tbuffs.get(i).id,0,oneRoundDescriptionbBuffer,attacker,defender);
+		}*/
 		int r=random.nextInt(6);//计算出招0-5
 		float t_inj;
-		t_inj=attack(attacker,defender,havingSkills.get(r),oneRoundDescriptionbBuffer);
-		defend(defender, attacker,havingSkills.get(r), t_inj,oneRoundDescriptionbBuffer);
+		t_inj=attack(attacker,defender,attacker.havingSkills.get(r),oneRoundDescriptionbBuffer);
+		defend(defender, attacker,attacker.havingSkills.get(r), t_inj,oneRoundDescriptionbBuffer);
 		return oneRoundDescriptionbBuffer;
 	}
 	public float attack(Fighters attacker,Fighters defender,Skill usingskill,StringBuffer dsp){//attack使用usingskill攻击
 		float injure;
-		injure=(attacker.bili*attacker.lidao/50)*usingskill.atk_xs;
+		injure=(attacker.bili*attacker.lidao)*usingskill.atk_xs;
 		dsp.append(attacker.name+"使出了"+usingskill.name+'\n');
 		if(usingskill.debuff!=Skill.nil) {
-			defender.addtotbuff(usingskill.debuff, dsp);
+			defender.addtotbuff(usingskill.debuff, dsp,defender);
 		}
 		if(usingskill.buff!=Skill.nil){
-			attacker.addtotbuff(usingskill.buff, dsp);
+			attacker.addtotbuff(usingskill.buff, dsp,attacker);
 		}
-		for (int i = 0; i < tbuffs.size(); i++) {
-			injure=attacker.checkbuff(3, tbuffs.get(i).id,injure,dsp,attacker,null);
+		for (int i = 0; i < attacker.tbuffs.size(); i++) {
+			injure=attacker.checkbuff(3, attacker.tbuffs.get(i).id,injure,dsp,attacker,null);
 		}
 		return injure;
 	}
 	public void defend(Fighters defender,Fighters attacker,Skill usingskill,float injure,StringBuffer dsp){//defender防御，对方使用的skill是usingskill
 		float realinj;
-		realinj=injure-defender.gengu*defender.bili/100;
-		for (int i = 0; i < tbuffs.size(); i++) {
-			injure=defender.checkbuff(4, tbuffs.get(i).id,injure,dsp,attacker,defender);
+		realinj=injure-defender.gengu*defender.bili/30;
+		for (int i = 0; i < defender.tbuffs.size(); i++) {
+			injure=defender.checkbuff(4, defender.tbuffs.get(i).id,injure,dsp,attacker,defender);
 		}
 		if(usingskill.texiao!=Skill.nil){
 			int k=random.nextInt(100);
@@ -205,7 +210,7 @@ public class Fighters implements Runnable{
 					if(r3<usingskill.tx_jilv)//破防特效发动
 					{
 						realinj=injure;
-						dsp.append(attacker.name+"发动了破防特效，造成无视防御的伤害"+'\n');
+						dsp.append(attacker.name+"发动了破防特效，无视防御"+'\n');
 					}
 					break;
 				case Skill.nil:
@@ -213,7 +218,7 @@ public class Fighters implements Runnable{
 				}
 			}
 		}
-		dsp.append(defender.name+"受到"+realinj+"点伤害");
+		dsp.append(defender.name+"受到"+realinj+"点伤害"+'\n');
 		defender.hp-=realinj;
 		dsp.append(attacker.name+"生命剩余"+attacker.hp+","+defender.name+"生命剩余"+defender.hp+'\n');
 	}
@@ -225,31 +230,32 @@ public class Fighters implements Runnable{
 			return 2;
 		else return 0;
 	}
-	public void addtotbuff(int buffid,StringBuffer dsp){//添加状态
-		int size=tbuffs.size();
+	public void addtotbuff(int buffid,StringBuffer dsp,Fighters user){//添加状态
+		int size=user.tbuffs.size();
 		int i;
 		for(i=0;i<size;i++)
 		{
-			if(tbuffs.get(i).id==buffid){
-				tbuffs.get(i).remaintime=tbuffs.get(i).maxtime;
+			if(user.tbuffs.get(i).id==buffid){
+				user.tbuffs.get(i).remaintime=user.tbuffs.get(i).maxtime;
 				return;
 			}
 		}
-		tbuffs.add(allStateandSkillsCollection.allStates.get(buffid));
+		this.tbuffs.add(AllStateandSkillsCollection.allStates.get(buffid-1));
 		checkbuff(1, buffid,0,dsp,null,null);
 	}
-	public void tbuff_refresh(StringBuffer dsp){//刷新状态剩余时间,移除到时状态
-		int size=tbuffs.size();
+	public void tbuff_refresh(StringBuffer dsp,Fighters user){//刷新状态剩余时间,移除到时状态
+		//int size=user.tbuffs.size();
 		int i;
-		for(i=0;i<size;i++)
+		for(i=0;i<user.tbuffs.size();i++)
 		{
-			if(tbuffs.get(i).maxtime!=State.forever)//不是永久状态
+			if(user.tbuffs.get(i).maxtime!=State.forever)//不是永久状态
 			{
-				if(tbuffs.get(i).remaintime>0)
-					tbuffs.get(i).remaintime--;
+				if(user.tbuffs.get(i).remaintime>0)
+					user.tbuffs.get(i).remaintime--;
 				else {
-					tbuffs.remove(i);
-					checkbuff(2,i,0,dsp,null,null);
+					checkbuff(2,user.tbuffs.get(i).id,0,dsp,null,null);
+					user.tbuffs.remove(i);
+					
 				}
 			}
 		}
@@ -258,16 +264,16 @@ public class Fighters implements Runnable{
 		if(when==1)//add
 		{
 			switch (id) {
-			case 1:dsp.append(this.name+"获得了流血状态"+'\n');break;
+			case 1:dsp.append(this.name+"获得了内伤状态"+'\n');break;
 			case 2:dsp.append(this.name+"获得了九阳真气状态"+'\n');break;
 			case 3:dsp.append(this.name+"获得了太玄真气状态"+'\n');break;
 			case 4:dsp.append(this.name+"获得了减速状态"+'\n');tshenfa-=shenfa*0.5;break;
 			case 5:dsp.append(this.name+"获得了主角光环状态，战力大增"+'\n');
-				tbili+=bili*0.15;
-				tgengu+=gengu*0.15;
-				tlidao+=lidao*0.15;
-				tshenfa+=shenfa*0.15;
-				twuxing+=wuxing*0.15;
+			this.tbili+=this.bili*0.15;
+			this.tgengu+=this.gengu*0.15;
+			this.tlidao+=this.lidao*0.15;
+			this.tshenfa+=this.shenfa*0.15;
+			this.twuxing+=this.wuxing*0.15;
 				break;
 			default:break;
 			}
@@ -275,56 +281,54 @@ public class Fighters implements Runnable{
 		}
 		else if(when==2)//remove
 		{
-			switch (id) {
-			case 1:dsp.append(this.name+"解除了流血状态"+'\n');break;
-			case 2:dsp.append(this.name+"解除了九阳真气状态"+'\n');break;
-			case 3:dsp.append(this.name+"解除了太玄真气状态"+'\n');break;
-			case 4:dsp.append(this.name+"的缓速状态解除"+'\n');tshenfa+=shenfa*0.5;break;
-			case 5:dsp.append(this.name+"的主角光环状态解除"+'\n');
-				tbili-=bili*0.15;
-				tgengu-=gengu*0.15;
-				tlidao-=lidao*0.15;
-				tshenfa-=shenfa*0.15;
-				twuxing-=wuxing*0.15;
-				break;
-			default:break;
+			if(id==1){
+				dsp.append(this.name+"解除了内伤状态"+'\n');
 			}
+			if(id==2){
+				dsp.append(this.name+"解除了九阳真气状态"+'\n');
+			}
+			if(id==3){
+				dsp.append(this.name+"解除了太玄真气状态"+'\n');
+			}
+			if(id==4){
+				dsp.append(this.name+"的缓速状态解除"+'\n');tshenfa+=shenfa*0.5;
+			}
+			if(id==5) {dsp.append(this.name+"的主角光环状态解除"+'\n');
+			this.tbili-=this.bili*0.15;
+			this.tgengu-=this.gengu*0.15;
+			this.tlidao-=this.lidao*0.15;
+			this.tshenfa-=this.shenfa*0.15;
+			this.twuxing-=this.wuxing*0.15;
+				
+			}
+			
+			
 			return inj;
 		}
 		else if(when==3)//atk
 		{
-			switch (id) {
-			case 1:break;
-			case 2:break;
-			case 3:inj*=1.15;dsp.append(atk.name+"发动了"+allStateandSkillsCollection.allStates.get(id-1).name+"的作用，造成伤害增加15%");break;
-			case 4:break;
-			case 5:break;
-			default:break;
+			if(id==3){
+				inj*=1.15;dsp.append(atk.name+"发动了"+AllStateandSkillsCollection.allStates.get(id-1).name+"的作用，造成伤害增加15%"+'\n');
 			}
 			return inj;
 		}
 		else if(when==4)//def
 		{
-			switch (id) {
-			case 1:break;
-			case 2:inj/=1.15;float t=(float) (inj*0.3+def.bili*def.lidao/300);atk.hp-=t;dsp.append(def.name+"发动了"+allStateandSkillsCollection.allStates.get(id-1).name+"的作用，受到伤害减少15%，并对对方造成反击,"+atk.name+"受到"+t+"点伤害"+'\n');break;
-			case 3:break;
-			case 4:break;
-			case 5:break;
-			default:break;
+			if(id==2){
+				inj/=1.15;float t=(float) (inj*0.3+def.bili*def.lidao/300);atk.hp-=t;dsp.append(def.name+"发动了"+AllStateandSkillsCollection.allStates.get(id-1).name+"的作用，受到伤害减少15%，并对对方造成反击,"+atk.name+"受到"+t+"点伤害"+'\n');
 			}
 			return inj;
 		}
 		else if(when==5)//回合开始
 		{
-			switch (id) {
-			case 1:float t=(float) (this.maxhp*0.02);this.hp-=t;dsp.append(this.name+"受到"+allStateandSkillsCollection.allStates.get(id-1).name+"状态的影响，损失"+t+"点生命"+'\n');break;
-			case 2:break;
-			case 3:float r=(float) (1000+this.maxhp*0.02);this.hp+=r;dsp.append(this.name+"受到"+allStateandSkillsCollection.allStates.get(id-1).name+"状态影响，恢复"+r+"点生命"+'\n');break;
-			case 4:break;
-			case 5:break;
-			default:break;
+			
+			if(id==1){
+				float t=(float) (this.maxhp*0.02);this.hp-=t;dsp.append(this.name+"受到"+AllStateandSkillsCollection.allStates.get(id-1).name+"状态的影响，损失"+t+"点生命"+'\n');
 			}
+			if(id==3){
+				float r=(float) (1000+this.maxhp*0.02);this.hp+=r;dsp.append(this.name+"受到"+AllStateandSkillsCollection.allStates.get(id-1).name+"状态影响，恢复"+r+"点生命"+'\n');
+			}
+			
 			return inj;
 		}
 		else{

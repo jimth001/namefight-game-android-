@@ -26,6 +26,6 @@ public class State {
 		maxtime=tmaxtime;
 		name=tname;
 		description=tdes;
-		remaintime=0;
+		remaintime=maxtime;
 	}
 }
