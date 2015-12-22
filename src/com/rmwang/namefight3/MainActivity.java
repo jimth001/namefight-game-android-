@@ -23,6 +23,16 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+        Button playBasedBluetoothButton=(Button)findViewById(R.id.playwithothers);
+        playBasedBluetoothButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO 自动生成的方法存根
+				Intent intent=new Intent(MainActivity.this,AutoRandomFightBaseBluetooth.class);
+				startActivity(intent);
+			}
+		});
     }
 
 

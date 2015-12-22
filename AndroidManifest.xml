@@ -29,6 +29,12 @@
             android:screenOrientation="portrait">
             
         </activity>
+        <activity
+            android:name="com.rmwang.namefight3.AutoRandomFightBaseBluetooth"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait">
+            
+        </activity>
     </application>
 
 </manifest>

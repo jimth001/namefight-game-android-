@@ -222,7 +222,7 @@ public class BluetoothService {
             mmInStream = tmpIn;
             myOs = tmpOut;
         }
-        /*约定：
+        /*约定：玩家控制出招时的参数规范
          * 第一个字节的含义
          * 1.传过来的是shenfa
          * 2.传基础伤害
@@ -234,11 +234,31 @@ public class BluetoothService {
         public void run() {
             byte[] buffer = new byte[8192];
             int bytes;
+            
             while (true) {//读
                 try {
-                    bytes = mmInStream.read(buffer);
+                	bytes = mmInStream.read(buffer);
+                	if(bytes==1)//控制信息流
+                    {
+                    	switch (buffer[0]) {
+						case -1://服务器端已接收到名字
+							myHandler.obtainMessage(-1);
+							break;
+						case -2://服务器尚未开始
+							myHandler.obtainMessage(-2);
+							break;
+						case -3://服务器正在计算
+							myHandler.obtainMessage(-3);
+							break;
+						default:
+							break;
+						}
+                    }
+                	else{
                     myHandler.obtainMessage(AutoRandomFightBaseBluetooth.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
                     .sendToTarget();
+                	}
+                    
                 } catch (IOException e) {
                     e.printStackTrace();
                     break;
