@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 public class AutoRandomFightBaseBluetooth extends Activity {
@@ -56,6 +57,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
     private int activityState;
     private EditText inputServer = null;
     TextView resultTextView=null;
+    private ScrollView mScrollView_showMessages;
     String nameInput=null;
 	//打开蓝牙设备
 	private static final int Enable_Bluetooth = 2;
@@ -81,6 +83,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 	        startGameButton=(Button)findViewById(R.id.startgame1);
 	        inputNameButton=(Button)findViewById(R.id.inputname);
 	        linkButton=(Button)findViewById(R.id.linkbluetooth);
+	        mScrollView_showMessages=(ScrollView) findViewById(R.id.scrollView_showMessages);
 	        inputServer=new EditText(this);
 	        inputNameButton.setOnClickListener(new OnClickListener() {
 				
@@ -117,6 +120,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 									Toast.makeText(getApplicationContext(), "请先输入姓名", Toast.LENGTH_SHORT).show();
 								}
 								else{
+									mScrollView_showMessages.scrollTo(0, resultTextView.getTop());
 									mySendMessage(nameInput.getBytes());//发送名字，然后等待，期间应该屏蔽按键，尚未完成屏蔽功能
 									setactivityState(clientWaitingStartSignal);
 								}
@@ -132,6 +136,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 									Toast.makeText(getApplicationContext(), "请先输入姓名", Toast.LENGTH_SHORT).show();
 								}
 								else{
+									mScrollView_showMessages.scrollTo(0, resultTextView.getTop());
 									Fighters p1=new Fighters(nameInput);
 									fightThread=new FightThread(mHandler);
 									fightThread.setP1(p1);

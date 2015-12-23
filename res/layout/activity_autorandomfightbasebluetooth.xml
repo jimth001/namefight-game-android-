@@ -3,21 +3,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
- <LinearLayout
+
+    <ImageView
+        android:id="@+id/backgroundofARFT"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/hslj" />
+
+    <Button
+        android:id="@+id/startgame1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="18dp"
+        android:textColor="#FF0000"
+        android:text="开始游戏" />
+    <Button
+        android:id="@+id/inputname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startgame1"
+        android:layout_alignBottom="@+id/startgame1"
+        android:textColor="#FF0000"
+        android:layout_toLeftOf="@+id/startgame1"
+        android:text="输入姓名" />
+
+    <Button
+        android:id="@+id/linkbluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/startgame1"
+        android:textColor="#FF0000"
+        android:layout_toRightOf="@+id/startgame1"
+        android:text="蓝牙连接" />
+
+    <ScrollView
+        android:id="@+id/ARFscrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="31dp"
+        android:layout_above="@+id/startgame1"
+        android:layout_toRightOf="@+id/linearLayout1" >
+
+        <TextView
+            android:id="@+id/autorandombluetoothresultTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FF0000" />
+    </ScrollView>
+
+    <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ARFscrollview"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/autoCompleteTextView1"
+        android:layout_marginBottom="80dp"
         android:orientation="vertical" >
 
         <ImageButton
-        android:id="@+id/imageButton4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout1"
-        android:layout_alignParentLeft="true"
-        android:src="@drawable/icon_waigong_071" />
+            android:id="@+id/imageButton4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_waigong_071" />
+
         <ImageButton
             android:id="@+id/imageButton2"
             android:layout_width="wrap_content"
@@ -48,43 +103,5 @@
             android:layout_height="wrap_content"
             android:src="@drawable/icon_neigong_038" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/startgame1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="18dp"
-        android:text="开始游戏" />
-
-    <TextView
-        android:id="@+id/autorandombluetoothresultTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="18dp"
-        android:layout_toRightOf="@+id/linearLayout1"
-        android:text="" />
-
-    <Button
-        android:id="@+id/inputname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/startgame1"
-        android:layout_alignBottom="@+id/startgame1"
-        
-        android:layout_toLeftOf="@+id/startgame1"
-        android:text="输入姓名" />
-
-    <Button
-        android:id="@+id/linkbluetooth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/startgame1"
-        
-        android:layout_toRightOf="@+id/startgame1"
-        android:text="蓝牙连接" />
 
 </RelativeLayout>

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class FightWithComputerActivity extends Activity{
@@ -15,6 +16,7 @@ public class FightWithComputerActivity extends Activity{
 	private EditText editText1;
 	private EditText editText2;
 	private TextView resultTextView;
+	private ScrollView mScrollView_showMessages;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,11 +26,13 @@ public class FightWithComputerActivity extends Activity{
         editText1=(EditText)findViewById(R.id.edit_text1);
 		editText2=(EditText)findViewById(R.id.edit_text2);
 		resultTextView=(TextView)findViewById(R.id.resulttextview);
+		mScrollView_showMessages=(ScrollView) findViewById(R.id.scrollView_showMessages);
         startButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
 				// TODO 自动生成的方法存根
+				mScrollView_showMessages.scrollTo(0, resultTextView.getTop());
 				getStart();
 			}
 		});

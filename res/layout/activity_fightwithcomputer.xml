@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <ImageView
+        android:id="@+id/backgroundofPWC"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/biwuchang" />
     <EditText
         android:id="@+id/edit_text2"
         android:layout_width="wrap_content"
@@ -43,17 +50,22 @@
         android:layout_marginTop="14dp"
         android:text="请在下方输入框中输入玩家一和玩家二的名字："
         android:textColor="#FF0000"
-        android:textSize="22sp" />
-
+        android:textSize="18sp" />
+	<ScrollView
+         android:id="@+id/scrollView_showMessages"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_below="@+id/edit_text2"
+         android:layout_marginTop="16dp"
+         >
+    
     <TextView
         android:id="@+id/resulttextview"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/edit_text2"
-        android:layout_marginTop="16dp"
-        android:scrollbars="vertical"
+        android:layout_height="fill_parent"
         android:textSize="14sp"
-        android:text="游戏说明：输入名字后，点击开始即可" />
-
+        android:text="游戏说明：输入名字后，点击开始即可" 
+        android:textColor="#FF0000"/>
+	</ScrollView>
 </RelativeLayout>
