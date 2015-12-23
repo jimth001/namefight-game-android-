@@ -28,4 +28,12 @@ public class State {
 		description=tdes;
 		remaintime=maxtime;
 	}
+	State(State t){
+		id=t.id;
+		type=t.type;
+		maxtime=t.maxtime;
+		name=t.name;
+		description=t.description;
+		remaintime=maxtime;
+	}
 }

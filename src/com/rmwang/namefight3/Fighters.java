@@ -242,11 +242,14 @@ public class Fighters{
 		{
 			if(user.tbuffs.get(i).id==buffid){
 				user.tbuffs.get(i).remaintime=user.tbuffs.get(i).maxtime;
+				checkbuff(1, buffid,0,dsp,null,null);
+				dsp.append(",状态剩余"+user.tbuffs.get(i).remaintime+"回合"+'\n');
 				return;
 			}
 		}
-		this.tbuffs.add(AllStateandSkillsCollection.allStates.get(buffid-1));
+		this.tbuffs.add(new State(AllStateandSkillsCollection.allStates.get(buffid-1)));
 		checkbuff(1, buffid,0,dsp,null,null);
+		dsp.append(",状态剩余"+tbuffs.get(tbuffs.size()-1).remaintime+"回合"+'\n');
 	}
 	public void tbuff_refresh(StringBuffer dsp,Fighters user){//刷新状态剩余时间,移除到时状态
 		//int size=user.tbuffs.size();
@@ -269,11 +272,11 @@ public class Fighters{
 		if(when==1)//add
 		{
 			switch (id) {
-			case 1:dsp.append(this.name+"获得了内伤状态"+'\n');break;
-			case 2:dsp.append(this.name+"获得了九阳真气状态"+'\n');break;
-			case 3:dsp.append(this.name+"获得了太玄真气状态"+'\n');break;
-			case 4:dsp.append(this.name+"获得了减速状态"+'\n');tshenfa-=shenfa*0.5;break;
-			case 5:dsp.append(this.name+"获得了主角光环状态，战力大增"+'\n');
+			case 1:dsp.append(this.name+"获得了内伤状态");break;
+			case 2:dsp.append(this.name+"获得了九阳真气状态");break;
+			case 3:dsp.append(this.name+"获得了太玄真气状态");break;
+			case 4:dsp.append(this.name+"获得了减速状态");tshenfa-=shenfa*0.5;break;
+			case 5:dsp.append(this.name+"获得了主角光环状态，战力大增");
 			this.tbili+=this.bili*0.15;
 			this.tgengu+=this.gengu*0.15;
 			this.tlidao+=this.lidao*0.15;
