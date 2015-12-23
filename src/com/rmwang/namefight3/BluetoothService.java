@@ -241,22 +241,31 @@ public class BluetoothService {
                 	if(bytes==1)//控制信息流
                     {
                     	switch (buffer[0]) {
-						case -1://服务器端已接收到名字
+						case -1://服务器端已接收到名字,
 							myHandler.obtainMessage(-1).sendToTarget();
 							break;
 						case -2://服务器尚未开始
 							myHandler.obtainMessage(-2).sendToTarget();
 							break;
-						case -3://服务器正在计算
+						case -3://服务器正在计算或轮到服务器出招
 							myHandler.obtainMessage(-3).sendToTarget();
 							break;
 						case -4://服务器告知客户端战斗结束
 							myHandler.obtainMessage(-4).sendToTarget();
 							break;
+						case -5://服务器告知客户端可以出招
+							myHandler.obtainMessage(12).sendToTarget();
+							break;
+						case -6://服务器端通知客户端修改游戏模式
+							myHandler.obtainMessage(-6).sendToTarget();
+							break;
 						default:
 							break;
 						}
                     }
+                	else if(bytes==4){//消息长4字节，传过来的是命令，由服务器端接收
+                		myHandler.obtainMessage().sendToTarget();
+                	}
                 	else{
                     myHandler.obtainMessage(AutoRandomFightBaseBluetooth.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
                     .sendToTarget();

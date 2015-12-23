@@ -1,15 +1,11 @@
 package com.rmwang.namefight3;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
 import android.R.integer;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 //git@github.com:jimth001/namefight-game-android-.git
@@ -60,10 +56,10 @@ public class Fighters{
 		exp=0;
 		lv=1;
 		sxd=0;
-		len=allStateandSkillsCollection.allSkills.size();
+		len=AllStateandSkillsCollection.allSkills.size();
 		for(i=0;i<len;i++)//初始版，全部技能加入进行测试
 		{
-			havingSkills.add(allStateandSkillsCollection.allSkills.get(i));
+			havingSkills.add(new Skill(AllStateandSkillsCollection.allSkills.get(i)));
 		}
 	}
 	public void LevelUp()
@@ -165,6 +161,21 @@ public class Fighters{
 		float t_inj;
 		t_inj=attack(attacker,defender,attacker.havingSkills.get(r),oneRoundDescriptionbBuffer);
 		defend(defender, attacker,attacker.havingSkills.get(r), t_inj,oneRoundDescriptionbBuffer);
+		return oneRoundDescriptionbBuffer;
+	}
+	public StringBuffer oneRound(Fighters attacker,Fighters defender,int counter,Skill usingskill){
+		StringBuffer oneRoundDescriptionbBuffer=new StringBuffer("");
+		oneRoundDescriptionbBuffer.append("第"+counter+"回合："+'\n');
+		for (int i = 0; i < attacker.tbuffs.size(); i++) {//回合开始，先check states
+			attacker.checkbuff(5, attacker.tbuffs.get(i).id,0,oneRoundDescriptionbBuffer,attacker,defender);
+		}
+		/*for (int i = 0; i < attacker.tbuffs.size(); i++) {//回合开始，先check states
+			attacker.checkbuff(5, attacker.tbuffs.get(i).id,0,oneRoundDescriptionbBuffer,attacker,defender);
+		}*/
+		
+		float t_inj;
+		t_inj=attack(attacker,defender,usingskill,oneRoundDescriptionbBuffer);
+		defend(defender, attacker,usingskill, t_inj,oneRoundDescriptionbBuffer);
 		return oneRoundDescriptionbBuffer;
 	}
 	public float attack(Fighters attacker,Fighters defender,Skill usingskill,StringBuffer dsp){//attack使用usingskill攻击
@@ -350,7 +361,10 @@ public class Fighters{
     	aBuffer.append(shenfa);
     	return aBuffer.toString().getBytes();
     }
-   
+    public Skill getSkill(int i)
+    {
+    		return havingSkills.get(i);
+    }
 
 }
 
@@ -359,6 +373,13 @@ class FightThread extends Thread{
 	private Fighters p2;
 	private Handler mHandler=null;
 	public final static int sleeptime=1000;
+	private StringBuffer oneRoundDescriptionBuffer;
+	private StringBuffer nativeBuffer;
+	private int gametimer1;
+	private int gametimer2;
+	private int roundcounter;
+	private int gamemaxspeed;
+	private int result;
 	private void delay(int ms){  
     	try {  
     		Thread.currentThread();  
@@ -377,6 +398,13 @@ class FightThread extends Thread{
 		p1=null;
 		p2=null;
 		mHandler=m;
+		oneRoundDescriptionBuffer=new StringBuffer("");
+		nativeBuffer=new StringBuffer("");
+		gametimer1=0;
+		gametimer2=0;
+		roundcounter=0;
+		gamemaxspeed=0;
+		result=0;
 	}
 	public void setP1(Fighters p){
 		p1=p;
@@ -384,11 +412,32 @@ class FightThread extends Thread{
 	public void setP1(String a){
 		p1=new Fighters(a);
 	}
+	public int judgeTurns()
+	{
+		gamemaxspeed=Math.min(gamemaxspeed, p2.tshenfa);
+		gamemaxspeed=Math.min(gamemaxspeed, p1.tshenfa);
+		
+		while(true){
+			gametimer1+=p1.tshenfa;
+			if(gametimer1>=gamemaxspeed)
+			{
+				gametimer1-=gamemaxspeed;
+				return 1;
+			}
+			gametimer2+=p2.tshenfa;
+			if(gametimer2>=gamemaxspeed)
+			{
+				gametimer2-=gamemaxspeed;
+				return 2;
+			}
+		}
+	}
 	public final Handler fighterHandler= new Handler(Looper.myLooper()) {
 		@Override
 		public void handleMessage(android.os.Message msg) {
 			 switch (msg.what){
 	            case 1://姓名
+	            	//自动随机战斗模式，此模式不涉及sp
 	            	p2=new Fighters((String)msg.obj);
 	            	//ARfightBaseBT移植到此：201512231423
 	            	int counter=1;//回合计数器
@@ -396,8 +445,8 @@ class FightThread extends Thread{
 	        		int timer2=0;//p2时间计数器
 	        		int maxspeed=0;//记录历史最高速度
 	        		StringBuffer fightDescriptionBuffer=new StringBuffer("");//战斗描述传送变量
-	        		StringBuffer nativeBuffer=new StringBuffer("");//本地战斗描述变量
-	        		int result=0;
+	        		nativeBuffer.setLength(0);//本地战斗描述变量
+	        		result=0;
 	        		p1.iniForFight(fightDescriptionBuffer);
 	        		p2.iniForFight(fightDescriptionBuffer);
 	        		fightDescriptionBuffer.append(p1.name+"初始属性:生命"+p1.hp+",力道"+p1.tlidao+",臂力"+p1.tbili+",悟性"+p1.twuxing+",身法"+p1.tshenfa+",根骨"+p1.tgengu+'\n');
@@ -451,7 +500,94 @@ class FightThread extends Thread{
 	            	//ARfightBaseBT(pFighter);
 	            	mHandler.obtainMessage(10,0,0,nativeBuffer).sendToTarget();
 	                break;
-	            case 2://战斗描述
+	            case 2://可控战斗模式，传过来的是命令
+	            	//arg1=1，则传过来的是本地命令，arg1=2则传过来的是客户端命令，arg1=3，则传过来的是客户端玩家姓名
+	            	if(msg.arg1==1){//arg2放命令
+	            		oneRoundDescriptionBuffer.append(p1.oneRound(p1, p2, roundcounter,p1.getSkill(msg.arg2)));
+	            		roundcounter++;
+	            		mHandler.obtainMessage(2,0,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();
+	            		mHandler.obtainMessage(15,0,0,oneRoundDescriptionBuffer).sendToTarget();
+	            		oneRoundDescriptionBuffer.setLength(0);
+	            		result=p1.judgeEnd(p2);
+	            		if(result==1)//1lose
+		        		{
+		        			oneRoundDescriptionBuffer.append(p2.name+"获胜");
+		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
+			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
+			            	
+		        		}
+		        		else if(result==2)//2lose
+		        		{
+		        			oneRoundDescriptionBuffer.append(p1.name+"获胜");
+		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
+			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
+			            	
+		        		}
+		        		else{
+		        			//未结束
+		        			if(judgeTurns()==1)//p1,通知服务器出招
+		            		{
+		            			mHandler.obtainMessage(13).sendToTarget();
+		            		}
+		            		else {//p2,通知客户端出招
+								mHandler.obtainMessage(14).sendToTarget();
+							}
+		        		}
+	            	}
+	            	else if(msg.arg1==2){//arg2放命令
+	            		oneRoundDescriptionBuffer.append(p1.oneRound(p2, p1, roundcounter,p2.getSkill(msg.arg2)));
+	            		roundcounter++;
+	            		mHandler.obtainMessage(2,0,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();
+	            		mHandler.obtainMessage(15,0,0,oneRoundDescriptionBuffer).sendToTarget();
+	            		oneRoundDescriptionBuffer.setLength(0);
+	            		result=p1.judgeEnd(p2);
+	            		if(result==1)//1lose
+		        		{
+		        			oneRoundDescriptionBuffer.append(p2.name+"获胜");
+		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
+			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
+			            	
+		        		}
+		        		else if(result==2)//2lose
+		        		{
+		        			oneRoundDescriptionBuffer.append(p1.name+"获胜");
+		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
+			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
+			            	
+		        		}
+		        		else{
+		        			//未结束
+		        			if(judgeTurns()==1)//p1,通知服务器出招
+		            		{
+		            			mHandler.obtainMessage(13).sendToTarget();
+		            		}
+		            		else {//p2,通知客户端出招
+								mHandler.obtainMessage(14).sendToTarget();
+							}
+		        		}
+	            	}
+	            	else if(msg.arg1==3){
+	            		p2=new Fighters((String)msg.obj);
+	            		gametimer1=0;
+	            		gametimer2=0;
+	            		roundcounter=1;
+	            		gamemaxspeed=0;
+	            		result=0;
+	            		oneRoundDescriptionBuffer.setLength(0);
+	            		p1.iniForFight(oneRoundDescriptionBuffer);
+	            		p2.iniForFight(oneRoundDescriptionBuffer);
+	            		if(judgeTurns()==1)//p1,通知服务器出招
+	            		{
+	            			mHandler.obtainMessage(13).sendToTarget();
+	            		}
+	            		else {//p2,通知客户端出招
+							mHandler.obtainMessage(14).sendToTarget();
+						}
+	            	}
 	            	break;
 	            case 3://战斗结束标志
 	            	break;

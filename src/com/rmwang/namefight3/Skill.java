@@ -58,6 +58,23 @@ public class Skill {
 		exp=0;
 		spNeeded=t_sp;
 	}
+	Skill(Skill t){
+		id=t.id;
+		type=t.type;
+		atk_xs=t.atk_xs;
+		tx_jilv=t.tx_jilv;
+		tx_cs=t.tx_cs;
+		texiao=t.texiao;
+		debuff=t.debuff;
+		buff=t.buff;
+		learnyaoqiu=t.learnyaoqiu;
+		name=t.name;
+		lv=t.lv;
+		description=t.description;
+		maxlv=t.maxlv;
+		exp=t.exp;
+		spNeeded=t.spNeeded;
+	}
 	public void lvup(){
 		exp-=expneeded[lv-1];
 		lv++;
