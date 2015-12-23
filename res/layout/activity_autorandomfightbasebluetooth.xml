@@ -69,4 +69,12 @@
         android:ems="10"
         android:text="000" />
 
+    <Button
+        android:id="@+id/inputname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/startgame1"
+        android:layout_centerHorizontal="true"
+        android:text="输入姓名" />
+
 </RelativeLayout>
