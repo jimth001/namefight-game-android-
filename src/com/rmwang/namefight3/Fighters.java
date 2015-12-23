@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
+import android.R.integer;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,7 +13,7 @@ import android.widget.Toast;
 
 
 //git@github.com:jimth001/namefight-game-android-.git
-public class Fighters implements Runnable{
+public class Fighters{
 	private float bili;//臂力
 	private float wuxing;//悟性
 	private float lidao;//力道
@@ -21,23 +22,24 @@ public class Fighters implements Runnable{
 	private float maxhp;
 	private float maxsp;
 	private ArrayList<Skill> havingSkills=null;
-	private Handler mHandler=null;
-	private float tbili;//战斗临时属性臂力
-	private float twuxing;//悟性
-	private float tlidao;//力道
-	private float tgengu;//根骨
-	private int tshenfa;//身法
-	private float hp;
-	private float sp;
-	private ArrayList<State> tbuffs=null;
+	
+	public float tbili;//战斗临时属性臂力
+	public float twuxing;//悟性
+	public float tlidao;//力道
+	public float tgengu;//根骨
+	public int tshenfa;//身法
+	public float hp;
+	public float sp;
+	public ArrayList<State> tbuffs=null;
 	private int exp;
 	private int lv;//
 	private int sxd;//属性点
-	private String name;
+	public String name;
 	public final Random random=new Random();
+	
 	private static final AllStateandSkillsCollection allStateandSkillsCollection=new AllStateandSkillsCollection();
 	
-	Fighters(String a,Handler handler){
+	Fighters(String a){
 		name=a;
 		havingSkills=new ArrayList<Skill>();
 		tbuffs=new ArrayList<State>();
@@ -58,7 +60,6 @@ public class Fighters implements Runnable{
 		exp=0;
 		lv=1;
 		sxd=0;
-		mHandler=handler;
 		len=allStateandSkillsCollection.allSkills.size();
 		for(i=0;i<len;i++)//初始版，全部技能加入进行测试
 		{
@@ -99,64 +100,10 @@ public class Fighters implements Runnable{
 		}
 	}
 	public void save(){}
-	public StringBuffer ARfightBaseBT(Fighters p2){//autorandomfightbasebluetooth
-		int counter=1;//回合计数器
-		int timer1=0;//p1时间计数器
-		int timer2=0;//p2时间计数器
-		int maxspeed=0;//记录历史最高速度
-		StringBuffer fightDescriptionBuffer=new StringBuffer("");//战斗描述传送变量
-		StringBuffer nativeBuffer=new StringBuffer("");//本地战斗描述变量
-		int result=0;
-		this.iniForFight(fightDescriptionBuffer);
-		p2.iniForFight(fightDescriptionBuffer);
-		fightDescriptionBuffer.append(this.name+"初始属性:生命"+this.hp+",力道"+this.tlidao+",臂力"+this.tbili+",悟性"+this.twuxing+",身法"+this.tshenfa+",根骨"+this.tgengu+'\n');
-		fightDescriptionBuffer.append(p2.name+"初始属性:生命"+p2.hp+",力道"+p2.tlidao+",臂力"+p2.tbili+",悟性"+p2.twuxing+",身法"+p2.tshenfa+",根骨"+p2.tgengu+'\n');
-		while(result==0)//战斗未结束
-		{
-			maxspeed=Math.min(maxspeed, p2.tshenfa);
-			maxspeed=Math.min(maxspeed, this.tshenfa);
-			timer1+=this.tshenfa;
-			timer2+=p2.tshenfa;
-			if(timer1>=maxspeed) {
-				timer1-=maxspeed;
-				fightDescriptionBuffer.append(oneRound(this, p2,counter));
-				this.tbuff_refresh(fightDescriptionBuffer,this);//刷新状态
-				p2.tbuff_refresh(fightDescriptionBuffer,p2);
-				counter++;
-				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes());
-				nativeBuffer.append(fightDescriptionBuffer);
-				fightDescriptionBuffer.setLength(0);//清空字符串
-			}
-			result=judgeEnd(p2);
-			if(result!=0) break;
-			if(timer2>=maxspeed){
-				timer2-=maxspeed;
-				fightDescriptionBuffer.append(oneRound(p2, this,counter));
-				p2.tbuff_refresh(fightDescriptionBuffer,p2);
-				this.tbuff_refresh(fightDescriptionBuffer,this);
-				counter++;
-				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes());
-				nativeBuffer.append(fightDescriptionBuffer);
-				fightDescriptionBuffer.setLength(0);//清空字符串
-			}
-			result=judgeEnd(p2);
-		}
-		if(result==1)//1lose
-		{
-			fightDescriptionBuffer.append(p2.name+"获胜");
-		}
-		else if(result==2)//2lose
-		{
-			fightDescriptionBuffer.append(this.name+"获胜");
-		}
-		else{
-			//报错
-		}
-		mHandler.obtainMessage(2,1,0,fightDescriptionBuffer.toString().getBytes());//arg1=1标志着战斗结束
-		nativeBuffer.append(fightDescriptionBuffer);
-		fightDescriptionBuffer.setLength(0);//清空字符串
+	/*public StringBuffer ARfightBaseBT(Fighters p2){//autorandomfightbasebluetooth
+		
 		return nativeBuffer;
-	}
+	}*/
 	public StringBuffer autoRandomFight(Fighters p2){
 		int counter=1;//回合计数器
 		int timer1=0;//p1时间计数器
@@ -394,20 +341,112 @@ public class Fighters implements Runnable{
 			return inj;
 		}
 	}
-	@Override
+    public byte[] attributeToByte()
+    {
+    	StringBuffer aBuffer=new StringBuffer("");
+    	aBuffer.append(shenfa);
+    	return aBuffer.toString().getBytes();
+    }
+   
+
+}
+
+class FightThread extends Thread{
+	private Fighters p1;
+	private Fighters p2;
+	private Handler mHandler=null;
+	public final static int sleeptime=1000;
+	private void delay(int ms){  
+    	try {  
+    		Thread.currentThread();  
+    		Thread.sleep(ms);  
+    	} catch (InterruptedException e) {  
+    		e.printStackTrace();  
+    	}   
+    }
 	public void run() {
 		// TODO 自动生成的方法存根
 		Looper.prepare();
 		Looper.loop();
+	}
+	public FightThread(Handler m) {
+		// TODO 自动生成的构造函数存根
+		p1=null;
+		p2=null;
+		mHandler=m;
+	}
+	public void setP1(Fighters p){
+		p1=p;
+	}
+	public void setP1(String a){
+		p1=new Fighters(a);
 	}
 	public final Handler fighterHandler= new Handler(Looper.myLooper()) {
 		@Override
 		public void handleMessage(android.os.Message msg) {
 			 switch (msg.what){
 	            case 1://姓名
-	            	Fighters pFighter=new Fighters((String)msg.obj, null);
-	            	StringBuffer re=ARfightBaseBT(pFighter);
-	            	mHandler.obtainMessage(10,0,0,re).sendToTarget();
+	            	p2=new Fighters((String)msg.obj);
+	            	//ARfightBaseBT移植到此：201512231423
+	            	int counter=1;//回合计数器
+	        		int timer1=0;//p1时间计数器
+	        		int timer2=0;//p2时间计数器
+	        		int maxspeed=0;//记录历史最高速度
+	        		StringBuffer fightDescriptionBuffer=new StringBuffer("");//战斗描述传送变量
+	        		StringBuffer nativeBuffer=new StringBuffer("");//本地战斗描述变量
+	        		int result=0;
+	        		p1.iniForFight(fightDescriptionBuffer);
+	        		p2.iniForFight(fightDescriptionBuffer);
+	        		fightDescriptionBuffer.append(p1.name+"初始属性:生命"+p1.hp+",力道"+p1.tlidao+",臂力"+p1.tbili+",悟性"+p1.twuxing+",身法"+p1.tshenfa+",根骨"+p1.tgengu+'\n');
+	        		fightDescriptionBuffer.append(p2.name+"初始属性:生命"+p2.hp+",力道"+p2.tlidao+",臂力"+p2.tbili+",悟性"+p2.twuxing+",身法"+p2.tshenfa+",根骨"+p2.tgengu+'\n');
+	        		while(result==0)//战斗未结束
+	        		{
+	        			maxspeed=Math.min(maxspeed, p2.tshenfa);
+	        			maxspeed=Math.min(maxspeed, p1.tshenfa);
+	        			timer1+=p1.tshenfa;
+	        			timer2+=p2.tshenfa;
+	        			if(timer1>=maxspeed) {
+	        				timer1-=maxspeed;
+	        				fightDescriptionBuffer.append(p1.oneRound(p1, p2,counter));
+	        				p1.tbuff_refresh(fightDescriptionBuffer,p1);//刷新状态
+	        				p2.tbuff_refresh(fightDescriptionBuffer,p2);
+	        				counter++;
+	        				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();
+	        				nativeBuffer.append(fightDescriptionBuffer);
+	        				fightDescriptionBuffer.setLength(0);//清空字符串
+	        				delay(sleeptime);
+	        			}
+	        			result=p1.judgeEnd(p2);
+	        			if(result!=0) break;
+	        			if(timer2>=maxspeed){
+	        				timer2-=maxspeed;
+	        				fightDescriptionBuffer.append(p1.oneRound(p2, p1,counter));
+	        				p2.tbuff_refresh(fightDescriptionBuffer,p2);
+	        				p1.tbuff_refresh(fightDescriptionBuffer,p1);
+	        				counter++;
+	        				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();
+	        				nativeBuffer.append(fightDescriptionBuffer);
+	        				fightDescriptionBuffer.setLength(0);//清空字符串
+	        				delay(sleeptime);
+	        			}
+	        			result=p1.judgeEnd(p2);
+	        		}
+	        		if(result==1)//1lose
+	        		{
+	        			fightDescriptionBuffer.append(p2.name+"获胜");
+	        		}
+	        		else if(result==2)//2lose
+	        		{
+	        			fightDescriptionBuffer.append(p1.name+"获胜");
+	        		}
+	        		else{
+	        			//报错
+	        		}
+	        		mHandler.obtainMessage(2,1,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+	        		nativeBuffer.append(fightDescriptionBuffer);
+	        		fightDescriptionBuffer.setLength(0);//清空字符串
+	            	//ARfightBaseBT(pFighter);
+	            	mHandler.obtainMessage(10,0,0,nativeBuffer).sendToTarget();
 	                break;
 	            case 2://战斗描述
 	            	break;
@@ -420,11 +459,4 @@ public class Fighters implements Runnable{
 	            }
 		}
     };
-    public byte[] attributeToByte()
-    {
-    	StringBuffer aBuffer=new StringBuffer("");
-    	aBuffer.append(shenfa);
-    	return aBuffer.toString().getBytes();
-    }
-
 }

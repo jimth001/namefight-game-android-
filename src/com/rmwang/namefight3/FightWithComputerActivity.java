@@ -46,8 +46,8 @@ public class FightWithComputerActivity extends Activity{
 		}
 		else {
 			resultTextView.setMovementMethod(new ScrollingMovementMethod());
-			Fighters p1=new Fighters(name1, null);
-			Fighters p2=new Fighters(name2, null);
+			Fighters p1=new Fighters(name1);
+			Fighters p2=new Fighters(name2);
 			StringBuffer rBuffer=null;
 			rBuffer=p1.autoRandomFight(p2);
 			resultTextView.setText(rBuffer);

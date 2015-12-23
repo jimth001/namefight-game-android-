@@ -242,13 +242,16 @@ public class BluetoothService {
                     {
                     	switch (buffer[0]) {
 						case -1://服务器端已接收到名字
-							myHandler.obtainMessage(-1);
+							myHandler.obtainMessage(-1).sendToTarget();
 							break;
 						case -2://服务器尚未开始
-							myHandler.obtainMessage(-2);
+							myHandler.obtainMessage(-2).sendToTarget();
 							break;
 						case -3://服务器正在计算
-							myHandler.obtainMessage(-3);
+							myHandler.obtainMessage(-3).sendToTarget();
+							break;
+						case -4://服务器告知客户端战斗结束
+							myHandler.obtainMessage(-4).sendToTarget();
 							break;
 						default:
 							break;

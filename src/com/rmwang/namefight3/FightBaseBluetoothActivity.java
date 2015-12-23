@@ -68,7 +68,7 @@ public class FightBaseBluetoothActivity extends Activity {
 	        {
 	        	builder.show();
 	        }
-	        fighters=new Fighters(inputServer.getText().toString(), mHandler);
+	        fighters=new Fighters(inputServer.getText().toString());
 	        Skillbutton1=(ImageButton)findViewById(R.id.imageButton1);
 	        Skillbutton2=(ImageButton)findViewById(R.id.imageButton2);
 	        Skillbutton3=(ImageButton)findViewById(R.id.imageButton3);
@@ -132,7 +132,7 @@ public class FightBaseBluetoothActivity extends Activity {
 					// TODO 自动生成的方法存根
 					if(myService.getState()==BluetoothService.STATE_CONNECTED)//已连接上
 					{
-						fightThread=new Thread(fighters,"战斗类线程");
+						fightThread=new FightThread(mHandler);
 						fightThread.start();
 						if(myService.getServerState()==false)//不是服务器端
 						{

@@ -66,15 +66,25 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="18dp"
         android:layout_toRightOf="@+id/linearLayout1"
-        android:ems="10"
-        android:text="000" />
+        android:text="" />
 
     <Button
         android:id="@+id/inputname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/startgame1"
-        android:layout_centerHorizontal="true"
+        android:layout_alignBaseline="@+id/startgame1"
+        android:layout_alignBottom="@+id/startgame1"
+        
+        android:layout_toLeftOf="@+id/startgame1"
         android:text="输入姓名" />
+
+    <Button
+        android:id="@+id/linkbluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/startgame1"
+        
+        android:layout_toRightOf="@+id/startgame1"
+        android:text="蓝牙连接" />
 
 </RelativeLayout>

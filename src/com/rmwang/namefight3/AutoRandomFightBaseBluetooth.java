@@ -17,9 +17,11 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 public class AutoRandomFightBaseBluetooth extends Activity {
@@ -29,11 +31,11 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 	//蓝牙适配器蓝牙服务
 		private BluetoothAdapter btAdapter = null;
 		private BluetoothService myService = null;
-	//蓝牙服务连接handler消息，线程间通信
+	//蓝牙服务连接handler消息，线程间通信:
     public static final int Message = 1;
     public static final int State_Change = 96;
     public static final int Device_Name = 4;
-    //
+    //此activity状态属性：
     public static final int serverWaitingName=501;//已经开始，等待对方发送名字
     public static final int serverComputing=502;//正在计算战斗中
     public static final int serverDenyMessage=503;//尚未开始
@@ -49,7 +51,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
     private ImageButton Skillbutton6;
     private Button inputNameButton;
     private Button startGameButton;
-    private Thread fightThread;
+    private Button linkButton;
     private StringBuffer resultBuffer=null;
     private int activityState;
     private EditText inputServer = null;
@@ -57,8 +59,8 @@ public class AutoRandomFightBaseBluetooth extends Activity {
     String nameInput=null;
 	//打开蓝牙设备
 	private static final int Enable_Bluetooth = 2;
-	//战斗类对象：
-	private Fighters p1=null;
+	//战斗线程：
+	FightThread fightThread=null;
 	@Override
 	    protected void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
@@ -78,6 +80,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 	        Skillbutton6=(ImageButton)findViewById(R.id.imageButton6);
 	        startGameButton=(Button)findViewById(R.id.startgame1);
 	        inputNameButton=(Button)findViewById(R.id.inputname);
+	        linkButton=(Button)findViewById(R.id.linkbluetooth);
 	        inputServer=new EditText(this);
 	        inputNameButton.setOnClickListener(new OnClickListener() {
 				
@@ -85,11 +88,17 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 				public void onClick(View arg0) {
 					// TODO 自动生成的方法存根
 					showDialogtoInput();
-					if(nameInput==null||nameInput.length()==0)
-					{
-						nameInput=null;
-						Toast.makeText(getApplicationContext(), "输入不合法，请重新输入", Toast.LENGTH_SHORT).show();
-					}
+					
+				}
+			});
+	        linkButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					// TODO 自动生成的方法存根
+					// 启动设备列表Activity
+					Intent serverIntent = new Intent(AutoRandomFightBaseBluetooth.this, MyDeviceListActivity.class);
+					startActivityForResult(serverIntent, 1);//1与方法onActivityResult中的1相对应
 				}
 			});
 	        startGameButton.setOnClickListener(new OnClickListener() {
@@ -112,6 +121,9 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 									setactivityState(clientWaitingStartSignal);
 								}
 							}
+							else {
+								Toast.makeText(getApplicationContext(), "正在等待服务器返回信息，请稍后", Toast.LENGTH_SHORT).show();
+							}
 						}
 						else{//做服务器端
 							if(activityState!=serverComputing)
@@ -120,11 +132,15 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 									Toast.makeText(getApplicationContext(), "请先输入姓名", Toast.LENGTH_SHORT).show();
 								}
 								else{
-									p1=new Fighters(nameInput, mHandler);
-									fightThread=new Thread(p1,"战斗类线程");
+									Fighters p1=new Fighters(nameInput);
+									fightThread=new FightThread(mHandler);
+									fightThread.setP1(p1);
 									fightThread.start();
 									setactivityState(serverWaitingName);
 								}
+							}
+							else{
+								Toast.makeText(getApplicationContext(), "服务端正在运行，请稍后", Toast.LENGTH_SHORT).show();
 							}
 						}
 					}
@@ -179,7 +195,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 		    	@Override
 		    	public void onClick(View arg0) {
 		    		// TODO 自动生成的方法存根
-		
+		    		
 		    	}
 		    });
 		    
@@ -187,6 +203,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 
 		public void showDialogtoInput()
 		{
+			
 			inputServer.setText("");
 	        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	        builder.setTitle("请输入人物名称").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
@@ -197,17 +214,27 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 							// TODO 自动生成的方法存根
 							nameInput=null;
 							dialog.dismiss();
+							ViewGroup parent=(ViewGroup)inputServer.getParent();
+					        parent.removeView(inputServer);
 						}
 					});
 	        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 
 	            public void onClick(DialogInterface dialog, int which) {
 	               nameInput=inputServer.getText().toString();
-	               Toast.makeText(getApplicationContext(), nameInput, Toast.LENGTH_SHORT).show();
+	               if(nameInput.length()==0)
+					{
+						Toast.makeText(getApplicationContext(), "输入不合法，请重新输入", Toast.LENGTH_SHORT).show();
+						nameInput=null;
+					}
+	               else Toast.makeText(getApplicationContext(), nameInput, Toast.LENGTH_SHORT).show();
 	               dialog.dismiss();
+	               ViewGroup parent=(ViewGroup)inputServer.getParent();
+	   	           parent.removeView(inputServer);
 	             }
 	        });
 	        builder.create().show();
+	        
 	        //final String nameString=inputServer.getText().toString();
 	        //Toast.makeText(getApplicationContext(), nameString, Toast.LENGTH_SHORT).show();
 	        //return nameString;
@@ -237,7 +264,13 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 	    		if(myService.getState() == BluetoothService.STATE_NONE) {
 	    			myService.start();
 	    		}
+	    		if(fightThread!=null){
+		    		if(myService.getState()==BluetoothService.STATE_CONNECTED&&myService.getServerState()==true){
+		    			fightThread.start();
+		    		}
+		    	}
 	    	}
+	    	
 	    }
 	    @Override
 	    protected void onPause() {
@@ -286,13 +319,13 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 	            }
 			}
 		}
-		@Override
+		/*@Override
 		public boolean onPrepareOptionsMenu(Menu menu) {
 			// 启动设备列表Activity
 			Intent serverIntent = new Intent(this, MyDeviceListActivity.class);
 			startActivityForResult(serverIntent, 1);//1与方法onActivityResult中的1相对应
 			return true;
-		}
+		}*/
 		 //处理其他线程传来的消息：
 		@SuppressLint("HandlerLeak") private final Handler mHandler = new Handler() {
 				@SuppressLint("HandlerLeak") @Override
@@ -324,7 +357,7 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 			            						Toast.makeText(getApplicationContext(), "byte数据转换String错误", Toast.LENGTH_SHORT).show();
 			            						e.printStackTrace();
 			            					}
-			            					p1.fighterHandler.obtainMessage(1,0,0,aString).sendToTarget();
+			            					fightThread.fighterHandler.obtainMessage(1,0,0,aString).sendToTarget();
 			            					byte[] s=new byte[]{-1};
 			            					mySendMessage(s);
 			            				}
@@ -354,17 +387,22 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 			            				resultTextView.setText(resultBuffer);
 					 				}
 			            	break;
-			            case 2://表示来自fighter类的战斗描述信息,仅服务器端会走这个分支
+			            case 2://表示来自fightThread类的战斗描述信息,仅服务器端会走这个分支
 			            	mySendMessage((byte[])msg.obj);//发送描述
 			            	if(msg.arg1==1){//战斗结束要做的一些状态变换
 			            		//解除按键屏蔽
-			            		setactivityState(clientHavenotStarted);
+			            		setactivityState(serverDenyMessage);
+			            		
 			            	}
+			            	//Toast.makeText(getApplicationContext(), "test000000000", Toast.LENGTH_SHORT).show();
 			            	break;
-			            case 10://从fighter开启的线程传回的本地战斗信息
+			            case 10://从fightThread线程传回的本地战斗信息
 			            	resultBuffer=(StringBuffer)msg.obj;
 			            	resultTextView.setText(resultBuffer);
 			            	setactivityState(serverDenyMessage);//完成一次，等待再次开始
+			            	Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
+			            	byte[] s=new byte[]{-4};
+        					mySendMessage(s);
 			            	break;
 			            case -1:Toast.makeText(getApplicationContext(), "服务器已接收信息", Toast.LENGTH_SHORT).show();
 			            	setactivityState(clientWaitingFightDescription);
@@ -372,6 +410,9 @@ public class AutoRandomFightBaseBluetooth extends Activity {
 			            case -2:Toast.makeText(getApplicationContext(), "服务器尚未开始", Toast.LENGTH_SHORT).show();
 			            	break;
 			            case -3:Toast.makeText(getApplicationContext(), "服务器已接收消息，正在运行中，请稍后", Toast.LENGTH_SHORT).show();
+			            	break;
+			            case -4:setactivityState(clientHavenotStarted);
+			            Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
 			            	break;
 						default: 
 							break;
