@@ -1,4 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+package com.rmwang.namefight3;
+
+public class BeifenCode {
+
+}
+/*<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,7 +25,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="18dp"
         android:textColor="#FF0000"
-        android:text="å¼€å§‹æ¸¸æˆ" />
+        android:text="¿ªÊ¼ÓÎÏ·" />
     <Button
         android:id="@+id/inputname"
         android:layout_width="wrap_content"
@@ -29,7 +34,7 @@
         android:layout_alignBottom="@+id/startgame1"
         android:textColor="#FF0000"
         android:layout_toLeftOf="@+id/startgame1"
-        android:text="è¾“å…¥å§“å" />
+        android:text="ÊäÈëÐÕÃû" />
 
     <Button
         android:id="@+id/linkbluetooth"
@@ -38,25 +43,24 @@
         android:layout_alignBottom="@+id/startgame1"
         android:textColor="#FF0000"
         android:layout_toRightOf="@+id/startgame1"
-        android:text="è“ç‰™è¿žæŽ¥" />
+        android:text="À¶ÑÀÁ¬½Ó" />
 
     <ScrollView
         android:id="@+id/ARFscrollview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/linearLayout1"
+        android:layout_above="@+id/startgame1"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/linearLayout1"
         android:layout_toRightOf="@+id/linearLayout1" >
 
         <TextView
-            android:id="@+id/bluetoothresultTextView"
+            android:id="@+id/autorandombluetoothresultTextView"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="æˆ˜æ–—æè¿°æ ï¼š"
-            android:textColor="#FF0000"
-            android:textSize="14sp" />
-			
+            android:layout_height="500dp"
+            android:text=""
+            android:textColor="#FF0000" />
+
     </ScrollView>
 
     <LinearLayout
@@ -69,7 +73,7 @@
         android:orientation="vertical" >
 
         <ImageButton
-            android:id="@+id/imageButton1"
+            android:id="@+id/imageButton4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_waigong_071" />
@@ -81,13 +85,13 @@
             android:src="@drawable/icon_neigong_011" />
 
         <ImageButton
-            android:id="@+id/imageButton3"
+            android:id="@+id/imageButton1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_waigong_157" />
 
         <ImageButton
-            android:id="@+id/imageButton4"
+            android:id="@+id/imageButton3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/icon_neigong_032" />
@@ -118,10 +122,7 @@
         android:id="@+id/statetextview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:text="æ¸¸æˆçŠ¶æ€æ ï¼š"
-        android:textColor="#FF0000"
-        android:textSize="14sp" />
+        android:ems="10" />
 
 	</ScrollView>
 
@@ -129,9 +130,14 @@
 	    android:id="@+id/changemode"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_below="@+id/ARFscrollview"
-	    android:layout_centerHorizontal="true"
-	    android:text="æ›´æ”¹æ¸¸æˆæ¨¡å¼"
+	    android:layout_alignBaseline="@+id/inputname"
+	    android:layout_alignBottom="@+id/inputname"
+	    android:layout_toLeftOf="@+id/inputname"
+	    android:text="¸ü¸ÄÓÎÏ·Ä£Ê½"
 	    android:textColor="#FF0000" />
 
 </RelativeLayout>
+
+ * 
+ * */
+ 

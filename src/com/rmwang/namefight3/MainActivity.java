@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO 自动生成的方法存根
-				Intent intent=new Intent(MainActivity.this,AutoRandomFightBaseBluetooth.class);
+				Intent intent=new Intent(MainActivity.this,FightBaseBluetoothActivity.class);
 				startActivity(intent);
 			}
 		});

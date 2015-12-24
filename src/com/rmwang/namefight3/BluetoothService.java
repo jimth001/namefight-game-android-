@@ -215,6 +215,7 @@ public class BluetoothService {
             // 获取BluetoothSocket的输入输出流
             try {
                 tmpIn = socket.getInputStream();
+                
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -222,15 +223,7 @@ public class BluetoothService {
             mmInStream = tmpIn;
             myOs = tmpOut;
         }
-        /*约定：玩家控制出招时的参数规范
-         * 第一个字节的含义
-         * 1.传过来的是shenfa
-         * 2.传基础伤害
-         * 3.传战斗描述，后面四个字节构成int，是战斗描述的btye长度
-         * 4.传最终伤害
-         * 5.添加状态命令//移除状态的计算是自己算的
-         * 
-         */
+        
         public void run() {
             byte[] buffer = new byte[8192];
             int bytes;
@@ -259,15 +252,16 @@ public class BluetoothService {
 						case -6://服务器端通知客户端修改游戏模式
 							myHandler.obtainMessage(-6).sendToTarget();
 							break;
-						default:
+						
+						default:myHandler.obtainMessage(11,(int)(15+buffer[0])).sendToTarget();
 							break;
 						}
                     }
                 	else if(bytes==4){//消息长4字节，传过来的是命令，由服务器端接收
-                		myHandler.obtainMessage().sendToTarget();
+                		//myHandler.obtainMessage(11,bytes,-1,buffer).sendToTarget();
                 	}
                 	else{
-                    myHandler.obtainMessage(AutoRandomFightBaseBluetooth.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
+                    myHandler.obtainMessage(FightBaseBluetoothActivity.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
                     .sendToTarget();
                 	}
                     
