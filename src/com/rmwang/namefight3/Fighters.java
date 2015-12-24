@@ -438,7 +438,9 @@ class FightThread extends Thread{
 		@Override
 		public void handleMessage(android.os.Message msg) {
 			 switch (msg.what){
-	            case 1://姓名
+	            case 1:
+	            	
+	            	//姓名
 	            	//自动随机战斗模式，此模式不涉及sp
 	            	p2=new Fighters((String)msg.obj);
 	            	//ARfightBaseBT移植到此：201512231423
@@ -465,10 +467,12 @@ class FightThread extends Thread{
 	        				p1.tbuff_refresh(fightDescriptionBuffer,p1);//刷新状态
 	        				p2.tbuff_refresh(fightDescriptionBuffer,p2);
 	        				counter++;
+	        				delay(1000);
 	        				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();
+	        				delay(1000);
 	        				nativeBuffer.append(fightDescriptionBuffer);
 	        				fightDescriptionBuffer.setLength(0);//清空字符串
-	        				//delay(sleeptime);
+	        				
 	        			}
 	        			result=p1.judgeEnd(p2);
 	        			if(result!=0) break;
@@ -478,10 +482,12 @@ class FightThread extends Thread{
 	        				p2.tbuff_refresh(fightDescriptionBuffer,p2);
 	        				p1.tbuff_refresh(fightDescriptionBuffer,p1);
 	        				counter++;
+	        				delay(1000);
 	        				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();
+	        				delay(1000);
 	        				nativeBuffer.append(fightDescriptionBuffer);
 	        				fightDescriptionBuffer.setLength(0);//清空字符串
-	        				//delay(sleeptime);
+	        				delay(2000);
 	        			}
 	        			result=p1.judgeEnd(p2);
 	        		}
@@ -496,44 +502,51 @@ class FightThread extends Thread{
 	        		else{
 	        			//报错
 	        		}
-	        		mHandler.obtainMessage(2,1,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
 	        		nativeBuffer.append(fightDescriptionBuffer);
+	        		delay(1000);
+	        		mHandler.obtainMessage(2,1,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+	        		delay(1000);
 	        		fightDescriptionBuffer.setLength(0);//清空字符串
 	            	//ARfightBaseBT(pFighter);
+	        		delay(1000);
 	            	mHandler.obtainMessage(10,0,0,nativeBuffer).sendToTarget();
+	            	delay(1000);
 	                break;
 	            case 2://可控战斗模式，传过来的是命令
 	            	//arg1=1，则传过来的是本地命令，arg1=2则传过来的是客户端命令，arg1=3，则传过来的是客户端玩家姓名
 	            	if(msg.arg1==1){//arg2放命令
+	            		delay(1000);
 	            		p1.oneRound(p1, p2, roundcounter,p1.getSkill(msg.arg2),oneRoundDescriptionBuffer);
 	            		roundcounter++;
 	            		p1.tbuff_refresh(oneRoundDescriptionBuffer,p1);//刷新状态
         				p2.tbuff_refresh(oneRoundDescriptionBuffer,p2);
-        				mHandler.obtainMessage(15,0,0,oneRoundDescriptionBuffer).sendToTarget();
+        				
 	            		mHandler.obtainMessage(2,0,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();
+	            		mHandler.obtainMessage(15,0,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();
 	            		
 	            		oneRoundDescriptionBuffer.setLength(0);
 	            		result=p1.judgeEnd(p2);
 	            		if(result==1)//1lose
 		        		{
 		        			oneRoundDescriptionBuffer.append(p2.name+"获胜"+'\n');
-		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
+		        			
 		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
 			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
 			            	
 		        		}
 		        		else if(result==2)//2lose
 		        		{
 		        			oneRoundDescriptionBuffer.append(p1.name+"获胜"+'\n');
-		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
-		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
 		        			
+		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
 			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
 			            	
 		        		}
 		        		else{
 		        			//未结束
-		        			delay(1000);
+		        			delay(2000);
 		        			if(judgeTurns()==1)//p1,通知服务器出招
 		            		{
 		            			mHandler.obtainMessage(13).sendToTarget();
@@ -544,20 +557,23 @@ class FightThread extends Thread{
 		        		}
 	            	}
 	            	else if(msg.arg1==2){//arg2放命令
+	            		delay(1000);
 	            		p1.oneRound(p2, p1, roundcounter,p2.getSkill(msg.arg2),oneRoundDescriptionBuffer);
 	            		roundcounter++;
 	            		p1.tbuff_refresh(oneRoundDescriptionBuffer,p1);//刷新状态
         				p2.tbuff_refresh(oneRoundDescriptionBuffer,p2);
-        				mHandler.obtainMessage(15,0,0,oneRoundDescriptionBuffer).sendToTarget();
+        				
 	            		mHandler.obtainMessage(2,0,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();
+	            		mHandler.obtainMessage(15,0,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();
 	            		
 	            		oneRoundDescriptionBuffer.setLength(0);
 	            		result=p1.judgeEnd(p2);
 	            		if(result==1)//1lose
 		        		{
 		        			oneRoundDescriptionBuffer.append(p2.name+"获胜"+'\n');
-		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
+		        			
 		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
 		        			
 			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
 			            	
@@ -565,15 +581,15 @@ class FightThread extends Thread{
 		        		else if(result==2)//2lose
 		        		{
 		        			oneRoundDescriptionBuffer.append(p1.name+"获胜"+'\n');
-		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer).sendToTarget();//arg1=1标志着战斗结束
-		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
 		        			
+		        			mHandler.obtainMessage(2,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
+		        			mHandler.obtainMessage(15,1,0,oneRoundDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
 			        		oneRoundDescriptionBuffer.setLength(0);//清空字符串
 			            	
 		        		}
 		        		else{
 		        			//未结束
-		        			delay(1000);
+		        			delay(2000);
 		        			if(judgeTurns()==1)//p1,通知服务器出招
 		            		{
 		            			mHandler.obtainMessage(13).sendToTarget();

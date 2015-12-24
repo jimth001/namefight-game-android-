@@ -29,6 +29,7 @@ public class FightBaseBluetoothActivity extends Activity {
 	//蓝牙适配器蓝牙服务
 		private BluetoothAdapter btAdapter = null;
 		private BluetoothService myService = null;
+		
 	//蓝牙服务连接handler消息，线程间通信:
    public static final int Message = 1;
    public static final int State_Change = 96;
@@ -57,8 +58,8 @@ public class FightBaseBluetoothActivity extends Activity {
    private Button startGameButton;
    private Button linkButton;
    private StringBuffer resultBuffer=null;
-   private int gameMode;
-   private int activityState;//activity当前状态
+   public static  int gameMode;
+   public static int activityState;//activity当前状态
    private EditText inputServer = null;
    private TextView resultTextView=null;
    private TextView stateTextView;
@@ -66,6 +67,7 @@ public class FightBaseBluetoothActivity extends Activity {
    private ScrollView stateScrollView;
    private Button changeModeButton;
    String nameInput=null;
+   
 	//打开蓝牙设备
 	private static final int Enable_Bluetooth = 2;
 	//战斗线程：
@@ -101,6 +103,7 @@ public class FightBaseBluetoothActivity extends Activity {
 				@Override
 				public void onClick(View arg0) {
 					// TODO 自动生成的方法存根
+					
 					if(myService!=null){
 						if(myService.getState()==BluetoothService.STATE_CONNECTED)
 						{
@@ -188,6 +191,7 @@ public class FightBaseBluetoothActivity extends Activity {
 									fightThread.setP1(p1);
 									setactivityState(serverWaitingName);
 									Toast.makeText(getApplicationContext(), "服务器已开启", Toast.LENGTH_SHORT).show();
+									resultBuffer.setLength(0);
 								}
 							}
 							else{
@@ -369,6 +373,7 @@ public class FightBaseBluetoothActivity extends Activity {
 	    		else if(myService == null) {
 	    			myService = new BluetoothService(this, mHandler);
 	    		}
+	    		
 	    	
 	    	
 	        
@@ -386,6 +391,7 @@ public class FightBaseBluetoothActivity extends Activity {
 	    		
 	    	}
 	    	
+	    	
 	    }
 	    @Override
 	    protected void onPause() {
@@ -399,13 +405,19 @@ public class FightBaseBluetoothActivity extends Activity {
 	        super.onDestroy();
 	        if (myService != null) myService.stop();
 	    }
-	    public void mySendMessage(byte []b) {
+	    public synchronized void mySendMessage(byte []b) {
 			if (myService.getState() != BluetoothService.STATE_CONNECTED) {
 				Toast.makeText(getApplicationContext(), "尚未连接到设备"
 	                    , Toast.LENGTH_SHORT).show();
 	            return;
 	        }
+			int l=b.length;
+			
+			byte[] len=new byte[4];
+			len=intToByteArray(l);
+			myService.write(len);
 	        myService.write(b);
+	        
 		}
 	    
 	  //交互界面事件处理返回结果
@@ -420,6 +432,8 @@ public class FightBaseBluetoothActivity extends Activity {
 					// 获取BLuetoothDevice对象
 					BluetoothDevice device = btAdapter.getRemoteDevice(address);
 					myService.connect(device);// 连接该设备
+					
+					
 				}
 				break;
 			case Enable_Bluetooth:
@@ -463,7 +477,7 @@ public class FightBaseBluetoothActivity extends Activity {
 			            	if(myService.getServerState()==true)//做服务器端，传过来的是名字//message=1,来自蓝牙的消息
 	            			{
 	            				if(activityState==serverWaitingName)
-	            				{	byte[] a;
+	            				{	/*byte[] a;
 	            					String aString="";
 	            					a=(byte[])msg.obj;
 	            					try {
@@ -473,7 +487,9 @@ public class FightBaseBluetoothActivity extends Activity {
 	            						// TODO 自动生成的 catch 块
 	            						Toast.makeText(getApplicationContext(), "byte数据转换String错误", Toast.LENGTH_SHORT).show();
 	            						e.printStackTrace();
-	            					}
+	            					}*/
+	            					Bundle data = msg.getData();
+		            				String aString = data.getString("fightdsp");
 	            					if(gameMode==controlMode)
 	            						fightThread.fighterHandler.obtainMessage(2,3,0,aString).sendToTarget();
 	            					else 
@@ -493,7 +509,7 @@ public class FightBaseBluetoothActivity extends Activity {
 	            				
 	            			}
 	            			else{//做客户端，接收到的是fightdescription
-	            				byte[] a;
+	            				/*byte[] a;
 	            				String aString="";
 	            				a=(byte[])msg.obj;
 	            				try {
@@ -503,24 +519,42 @@ public class FightBaseBluetoothActivity extends Activity {
 									// TODO 自动生成的 catch 块
 									Toast.makeText(getApplicationContext(), "byte数据转换String错误", Toast.LENGTH_SHORT).show();
 									e.printStackTrace();
-								}
-	            				resultBuffer.append(aString);
-	            				resultTextView.setText(resultBuffer);
+								}*/
+	            				Bundle data = msg.getData();
+	            				String readMessage = data.getString("fightdsp");
+	            				resultBuffer.append(readMessage);
 	            				
+	            				resultTextView.setText(resultBuffer);
+	            				//Toast.makeText(getApplicationContext(), "resultbuffer长度:"+readMessage.length(), Toast.LENGTH_SHORT).show();//报告bug
 			 				}
 						}
 			            	break;
 			            case 2://表示来自fightThread类的战斗描述信息,仅服务器端会走这个分支
-			            	mySendMessage((byte[])msg.obj);//发送描述
+			            	byte[] aa=(byte[])msg.obj;
+			            	mySendMessage(aa);//发送描述
+			            	byte[] tmp1;
+            				String tmpString="";
+            				tmp1=(byte[])msg.obj;
+            				try {
+								tmpString=new String(tmp1,"UTF-8");
+								
+							} catch (UnsupportedEncodingException e) {
+								// TODO 自动生成的 catch 块
+								Toast.makeText(getApplicationContext(), "byte数据转换String错误", Toast.LENGTH_SHORT).show();
+								e.printStackTrace();
+							}
+            				resultBuffer.append(tmpString);
+            				resultTextView.setText(resultBuffer);
 			            	//Toast.makeText(getApplicationContext(), "test000000000", Toast.LENGTH_SHORT).show();
 			            	break;
 			            case 10://从fightThread线程传回的本地战斗信息，仅autorandom模式用
-			            	resultBuffer=(StringBuffer)msg.obj;
-			            	resultTextView.setText(resultBuffer);
+			            	//resultBuffer=(StringBuffer)msg.obj;
+			            	//resultTextView.setText(resultBuffer);
 			            	setactivityState(serverDenyMessage);//完成一次，等待再次开始
 			            	Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
-			            	byte[] s=new byte[]{-4};
-			            	mySendMessage(s);
+			            	
+			            	
+			            	//mySendMessage(resultBuffer.toString().getBytes());
 			            	break;
 			            case 11://服务器端，接收到客户端的技能命令
 			            	if(activityState==serverWaitingOptionCmd)
@@ -543,7 +577,7 @@ public class FightBaseBluetoothActivity extends Activity {
 			            	}
 			            	else {
 			            		//若信息传输和客户端按键控制不出现错误，不应该走入此分支
-			            		Toast.makeText(getApplicationContext(), "信息传输或客户端按键控制出错", Toast.LENGTH_SHORT).show();//报告bug
+			            		Toast.makeText(getApplicationContext(), "wrong branch"+msg.arg1+ "  "+msg.arg2, Toast.LENGTH_SHORT).show();//报告bug
 			            	}
 			            	break;
 			            case 12://客户端，接收到了服务器端的命令，可以发送指令了
@@ -559,10 +593,21 @@ public class FightBaseBluetoothActivity extends Activity {
 			            	break;
 			            case 15://服务器端，control模式下，fightThread传回战斗描述，显示
 			            	synchronized (this) {
-			            		
-			            		resultBuffer.append((StringBuffer)msg.obj);
+			            		/*byte[] a;
+	            				String aString="";
+	            				a=(byte[])msg.obj;
+	            				try {
+									aString=new String(a,"UTF-8");
+									
+								} catch (UnsupportedEncodingException e) {
+									// TODO 自动生成的 catch 块
+									Toast.makeText(getApplicationContext(), "byte数据转换String错误", Toast.LENGTH_SHORT).show();
+									e.printStackTrace();
+								}
+	            				resultBuffer.append(aString);
 	            				resultTextView.setText(resultBuffer);
-	            				Toast.makeText(getApplicationContext(), "00000000000000", Toast.LENGTH_SHORT).show();
+	            				//resultTextView.setText(resultBuffer);
+	            				Toast.makeText(getApplicationContext(), "00000000000000", Toast.LENGTH_SHORT).show();*/
 				            	if(msg.arg1==1){//战斗结束要做的一些状态变换
 				            		//解除按键屏蔽
 				            		setactivityState(serverDenyMessage);
@@ -588,6 +633,17 @@ public class FightBaseBluetoothActivity extends Activity {
 			            case -6://客户端修改游戏模式
 			            	changeGameMode();
 			            	break;
+			            case 999://测试用：
+			            	if(msg.arg1==0){
+			            		if(msg.arg2==1)
+			            		Toast.makeText(getApplicationContext(), "蓝牙连接失败，请重试", Toast.LENGTH_SHORT).show();
+			            		else if(msg.arg2==2)
+			            			Toast.makeText(getApplicationContext(), "XXXXXXXXX222", Toast.LENGTH_SHORT).show();
+			            	}
+			            	if(msg.arg1==1)Toast.makeText(getApplicationContext(), "TTTTTTTTT", Toast.LENGTH_SHORT).show();
+			            	if(msg.arg1==4)Toast.makeText(getApplicationContext(), "wrongbytes:"+msg.arg2, Toast.LENGTH_SHORT).show();
+			            	if(msg.arg1==5)Toast.makeText(getApplicationContext(), "bytes:"+msg.arg2, Toast.LENGTH_SHORT).show();
+			            	break;
 						default: 
 							break;
 			            }
@@ -603,4 +659,29 @@ public class FightBaseBluetoothActivity extends Activity {
 		{
 			return activityState;
 		}
+		public static byte[] intToByteArray(int i) {   
+	          byte[] result = new byte[4];   
+	          //由高位到低位
+	          result[0] = (byte)((i >> 24) & 0xFF);
+	          result[1] = (byte)((i >> 16) & 0xFF);
+	          result[2] = (byte)((i >> 8) & 0xFF); 
+	          result[3] = (byte)(i & 0xFF);
+	          return result;
+	        }
+	 
+	        /**
+	         * byte[]转int
+	         * @param bytes
+	         * @return
+	         */
+	        public static int byteArrayToInt(byte[] bytes) {
+	               int value= 0;
+	               //由高位到低位
+	               for (int i = 0; i < 4; i++) {
+	                   int shift= (4 - 1 - i) * 8;
+	                   value +=(bytes[i] & 0x000000FF) << shift;//往高位游
+	               }
+	               return value;
+	         }
+
 }//类结束
