@@ -21,27 +21,27 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int biwuchang=0x7f020000;
-        public static final int hslj=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
-        public static final int icon_neigong_011=0x7f020003;
-        public static final int icon_neigong_021=0x7f020004;
-        public static final int icon_neigong_032=0x7f020005;
-        public static final int icon_neigong_038=0x7f020006;
+        public static final int beiming=0x7f020000;
+        public static final int biwuchang=0x7f020001;
+        public static final int dugu=0x7f020002;
+        public static final int hslj=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int icon_neigong_011=0x7f020005;
+        public static final int icon_neigong_032=0x7f020006;
         public static final int icon_neigong_042=0x7f020007;
-        public static final int icon_waigong_071=0x7f020008;
-        public static final int icon_waigong_127=0x7f020009;
-        public static final int icon_waigong_128=0x7f02000a;
-        public static final int icon_waigong_141=0x7f02000b;
-        public static final int icon_waigong_145=0x7f02000c;
-        public static final int icon_waigong_146=0x7f02000d;
-        public static final int icon_waigong_157=0x7f02000e;
-        public static final int kaichang=0x7f02000f;
-        public static final int startbj=0x7f020010;
+        public static final int icon_waigong_127=0x7f020008;
+        public static final int icon_waigong_128=0x7f020009;
+        public static final int icon_waigong_141=0x7f02000a;
+        public static final int icon_waigong_145=0x7f02000b;
+        public static final int jiuyang=0x7f02000c;
+        public static final int kaichang=0x7f02000d;
+        public static final int putong=0x7f02000e;
+        public static final int startbj=0x7f02000f;
+        public static final int taixuan=0x7f020010;
+        public static final int xuedao=0x7f020011;
     }
     public static final class id {
         public static final int ARFscrollview=0x7f080004;
-        public static final int action_settings=0x7f080020;
         public static final int backgroundofARFT=0x7f080000;
         public static final int backgroundofPWC=0x7f080010;
         public static final int bluetoothresultTextView=0x7f080006;

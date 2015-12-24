@@ -327,6 +327,15 @@ public class FightBaseBluetoothActivity extends Activity {
 		public void showDialogtoInput()
 		{
 			
+			try {
+				ViewGroup parent=(ViewGroup)inputServer.getParent();
+		        parent.removeView(inputServer);
+		        
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
 			inputServer.setText("");
 	        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	        builder.setTitle("请输入人物名称").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer)
@@ -548,9 +557,18 @@ public class FightBaseBluetoothActivity extends Activity {
 			            	//Toast.makeText(getApplicationContext(), "test000000000", Toast.LENGTH_SHORT).show();
 			            	break;
 			            case 10://从fightThread线程传回的本地战斗信息，仅autorandom模式用
+			            	//已弃用，autorandom和control模式的服务器端战斗描述均已移植到case2中：
 			            	//resultBuffer=(StringBuffer)msg.obj;
 			            	//resultTextView.setText(resultBuffer);
-			            	setactivityState(serverDenyMessage);//完成一次，等待再次开始
+			            	//战斗完成，向客户端发完成信号：
+			            	//完成一次，等待再次开始
+			            	if(msg.arg1==1){//战斗结束要做的一些状态变换
+			            		//解除按键屏蔽
+			            		setactivityState(serverDenyMessage);
+			            		byte[] ss=new byte[]{-4};
+				            	mySendMessage(ss);
+				            	Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
+			            	}
 			            	Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
 			            	
 			            	

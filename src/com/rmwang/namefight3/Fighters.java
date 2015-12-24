@@ -46,12 +46,12 @@ public class Fighters{
 		{
 			sum+=Math.abs(name.indexOf(i));
 		}
-		bili=20+sum%30;
-		wuxing=20+sum*2%30;
-		lidao=20+sum*2%30;
-		gengu=20+sum*2%30;
-		shenfa=20+sum*2%30;
-		maxhp=2000+sum*100%1000;
+		bili=25+sum%45;
+		wuxing=25+sum*2%45;
+		lidao=25+sum*3%45;
+		gengu=25+sum*4%45;
+		shenfa=25+sum*5%45;
+		maxhp=5000+sum*100%5000;
 		maxsp=2000+sum*85%900;
 		exp=0;
 		lv=1;
@@ -371,7 +371,7 @@ class FightThread extends Thread{
 	private Fighters p1;
 	private Fighters p2;
 	private Handler mHandler=null;
-	public final static int sleeptime=100;
+	public final static int sleeptime=1000;
 	private StringBuffer oneRoundDescriptionBuffer;
 	private StringBuffer nativeBuffer;
 	private int gametimer1;
@@ -467,9 +467,8 @@ class FightThread extends Thread{
 	        				p1.tbuff_refresh(fightDescriptionBuffer,p1);//刷新状态
 	        				p2.tbuff_refresh(fightDescriptionBuffer,p2);
 	        				counter++;
-	        				delay(1000);
 	        				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();
-	        				delay(1000);
+	        				//delay(sleeptime);
 	        				nativeBuffer.append(fightDescriptionBuffer);
 	        				fightDescriptionBuffer.setLength(0);//清空字符串
 	        				
@@ -482,12 +481,12 @@ class FightThread extends Thread{
 	        				p2.tbuff_refresh(fightDescriptionBuffer,p2);
 	        				p1.tbuff_refresh(fightDescriptionBuffer,p1);
 	        				counter++;
-	        				delay(1000);
+	        				//delay(sleeptime);
 	        				mHandler.obtainMessage(2,0,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();
-	        				delay(1000);
+	        				//delay(sleeptime);
 	        				nativeBuffer.append(fightDescriptionBuffer);
 	        				fightDescriptionBuffer.setLength(0);//清空字符串
-	        				delay(2000);
+	        				//delay(sleeptime);
 	        			}
 	        			result=p1.judgeEnd(p2);
 	        		}
@@ -503,19 +502,19 @@ class FightThread extends Thread{
 	        			//报错
 	        		}
 	        		nativeBuffer.append(fightDescriptionBuffer);
-	        		delay(1000);
+	        		//delay(sleeptime);
 	        		mHandler.obtainMessage(2,1,0,fightDescriptionBuffer.toString().getBytes()).sendToTarget();//arg1=1标志着战斗结束
-	        		delay(1000);
+	        		//delay(sleeptime);
 	        		fightDescriptionBuffer.setLength(0);//清空字符串
 	            	//ARfightBaseBT(pFighter);
-	        		delay(1000);
-	            	mHandler.obtainMessage(10,0,0,nativeBuffer).sendToTarget();
-	            	delay(1000);
+	        		//delay(sleeptime);
+	            	mHandler.obtainMessage(10,1,0,nativeBuffer).sendToTarget();
+	            	//delay(sleeptime);
 	                break;
 	            case 2://可控战斗模式，传过来的是命令
 	            	//arg1=1，则传过来的是本地命令，arg1=2则传过来的是客户端命令，arg1=3，则传过来的是客户端玩家姓名
 	            	if(msg.arg1==1){//arg2放命令
-	            		delay(1000);
+	            		delay(sleeptime);
 	            		p1.oneRound(p1, p2, roundcounter,p1.getSkill(msg.arg2),oneRoundDescriptionBuffer);
 	            		roundcounter++;
 	            		p1.tbuff_refresh(oneRoundDescriptionBuffer,p1);//刷新状态
@@ -546,7 +545,7 @@ class FightThread extends Thread{
 		        		}
 		        		else{
 		        			//未结束
-		        			delay(2000);
+		        			delay(sleeptime);
 		        			if(judgeTurns()==1)//p1,通知服务器出招
 		            		{
 		            			mHandler.obtainMessage(13).sendToTarget();
@@ -557,7 +556,7 @@ class FightThread extends Thread{
 		        		}
 	            	}
 	            	else if(msg.arg1==2){//arg2放命令
-	            		delay(1000);
+	            		delay(sleeptime);
 	            		p1.oneRound(p2, p1, roundcounter,p2.getSkill(msg.arg2),oneRoundDescriptionBuffer);
 	            		roundcounter++;
 	            		p1.tbuff_refresh(oneRoundDescriptionBuffer,p1);//刷新状态
@@ -589,7 +588,7 @@ class FightThread extends Thread{
 		        		}
 		        		else{
 		        			//未结束
-		        			delay(2000);
+		        			delay(sleeptime);
 		        			if(judgeTurns()==1)//p1,通知服务器出招
 		            		{
 		            			mHandler.obtainMessage(13).sendToTarget();

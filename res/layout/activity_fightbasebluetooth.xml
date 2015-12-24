@@ -72,37 +72,37 @@
             android:id="@+id/imageButton1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_waigong_071" />
+            android:src="@drawable/putong" />
 
         <ImageButton
             android:id="@+id/imageButton2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_neigong_011" />
+            android:src="@drawable/dugu" />
 
         <ImageButton
             android:id="@+id/imageButton3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_waigong_157" />
+            android:src="@drawable/beiming" />
 
         <ImageButton
             android:id="@+id/imageButton4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_neigong_032" />
+            android:src="@drawable/jiuyang" />
 
         <ImageButton
             android:id="@+id/imageButton5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_waigong_146" />
+            android:src="@drawable/xuedao" />
 
         <ImageButton
             android:id="@+id/imageButton6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_neigong_038" />
+            android:src="@drawable/taixuan" />
     </LinearLayout>
 
 	<ScrollView
