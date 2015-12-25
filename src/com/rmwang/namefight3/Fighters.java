@@ -51,7 +51,7 @@ public class Fighters{
 		lidao=25+sum*3%45;
 		gengu=25+sum*4%45;
 		shenfa=25+sum*5%45;
-		maxhp=5000+sum*100%5000;
+		maxhp=20000+sum*100%20000;
 		maxsp=2000+sum*85%900;
 		exp=0;
 		lv=1;
@@ -371,7 +371,7 @@ class FightThread extends Thread{
 	private Fighters p1;
 	private Fighters p2;
 	private Handler mHandler=null;
-	public final static int sleeptime=1000;
+	public final static int sleeptime=200;
 	private StringBuffer oneRoundDescriptionBuffer;
 	private StringBuffer nativeBuffer;
 	private int gametimer1;
@@ -608,6 +608,8 @@ class FightThread extends Thread{
 	            		oneRoundDescriptionBuffer.setLength(0);
 	            		p1.iniForFight(oneRoundDescriptionBuffer);
 	            		p2.iniForFight(oneRoundDescriptionBuffer);
+	            		oneRoundDescriptionBuffer.append(p1.name+"初始属性:生命"+p1.hp+",力道"+p1.tlidao+",臂力"+p1.tbili+'\n'+"悟性"+p1.twuxing+",身法"+p1.tshenfa+",根骨"+p1.tgengu+'\n');
+		        		oneRoundDescriptionBuffer.append(p2.name+"初始属性:生命"+p2.hp+",力道"+p2.tlidao+",臂力"+p2.tbili+'\n'+"悟性"+p2.twuxing+",身法"+p2.tshenfa+",根骨"+p2.tgengu+'\n');
 	            		if(judgeTurns()==1)//p1,通知服务器出招
 	            		{
 	            			mHandler.obtainMessage(13).sendToTarget();

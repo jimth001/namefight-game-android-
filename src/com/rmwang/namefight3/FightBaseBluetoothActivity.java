@@ -569,7 +569,7 @@ public class FightBaseBluetoothActivity extends Activity {
 				            	mySendMessage(ss);
 				            	Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
 			            	}
-			            	Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
+			            	//Toast.makeText(getApplicationContext(), "战斗已结束，可以点击开始游戏重新开始", Toast.LENGTH_SHORT).show();
 			            	
 			            	
 			            	//mySendMessage(resultBuffer.toString().getBytes());
