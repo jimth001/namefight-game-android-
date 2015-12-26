@@ -432,8 +432,10 @@ public class FightBaseBluetoothActivity extends Activity {
 	    	{
 	    		byte []tmp=new byte[]{-7};
 		    	mySendMessage(tmp);
+		    	
 			}
-	    	
+	    	Toast.makeText(getApplicationContext(), "已退出蓝牙对战，连接已断开 "
+                    , Toast.LENGTH_SHORT).show();
 	        super.onDestroy();
 	        if (myService != null) myService.stop();
 	        //Toast.makeText(getApplicationContext(), "destroy"
@@ -461,25 +463,24 @@ public class FightBaseBluetoothActivity extends Activity {
 			case 1://1代表连接设备  //resultCode表示返回值状态 由子Activity通过其setResult()方法返回       data包含了返回数据
 				// 如果设备列表Activity返回一个连接的设备
 				if (resultCode == Activity.RESULT_OK) {
-					// 获取设备的MAC地址
-					String address = data.getExtras().getString(
-							MyDeviceListActivity.EXTRA_DEVICE_ADDRESS);
-					// 获取BLuetoothDevice对象
-					BluetoothDevice device = btAdapter.getRemoteDevice(address);
-					
 					//判断是否已连接，若是，断开重连
 					if(myService.getState()==BluetoothService.STATE_CONNECTED)
 					{
 						byte []tmp=new byte[]{-8};
 				    	mySendMessage(tmp);
+				    	stateTextView.setText("游戏状态栏:"+'\n');
+	            		resultTextView.setText("战斗描述栏："+'\n');
+				    	Toast.makeText(getApplicationContext(), "已断开原有连接，正在尝试新连接，请稍后", Toast.LENGTH_SHORT).show();
 				    	myService.stop();
 				    	myService.start();
-				    	Toast.makeText(getApplicationContext(), "已断开原有连接，正在尝试新连接，请稍后", Toast.LENGTH_SHORT).show();
+				    	
 					}
-					
+					// 获取设备的MAC地址
+					String address = data.getExtras().getString(
+							MyDeviceListActivity.EXTRA_DEVICE_ADDRESS);
+					// 获取BLuetoothDevice对象
+					BluetoothDevice device = btAdapter.getRemoteDevice(address);
 					myService.connect(device);// 连接该设备
-					
-					
 				}
 				break;
 			case Enable_Bluetooth:
@@ -660,11 +661,12 @@ public class FightBaseBluetoothActivity extends Activity {
 			            		resultTextView.setText("战斗描述栏："+'\n');
 			            	}
 			            	if(msg.arg1==99){
-			            		Toast.makeText(getApplicationContext(), "已断开原有连接，正在尝试新连接，请稍后", Toast.LENGTH_SHORT).show();
+			            		
 			            		myService.stop();
 			            		myService.start();
 			            		stateTextView.setText("游戏状态栏:"+'\n');
 			            		resultTextView.setText("战斗描述栏："+'\n');
+			            		Toast.makeText(getApplicationContext(), "已断开原有连接，正在尝试新连接，请稍后", Toast.LENGTH_SHORT).show();
 			            	}
 			            	break;
 						default: 
