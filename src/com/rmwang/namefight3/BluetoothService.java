@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import android.R.integer;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -98,6 +99,7 @@ public class BluetoothService {
         myHandler.sendMessage(msg);
         setState(STATE_CONNECTED);
         if(callType==1) isServer=true;
+        else isServer=false;
     }
     public synchronized void stop() {//停止所有线程的方法
         if (myConnectThread != null) {myConnectThread.cancel(); myConnectThread = null;}
@@ -255,105 +257,113 @@ public class BluetoothService {
 			 msg.arg2=arg2;
 			 m.sendMessage(msg);
         }
-        public void  run() {
+        @SuppressLint("NewApi") public void  run() {
             byte[] buffer = new byte[8192];
             
             int bytes;
             
             while (true) {//读
-            	
-            		synchronized (mmInStream) {
-            			try {
-	                    	byte[]len=new byte[4];
-	                    	mmInStream.read(len,0,4);
-	                    	bytes=FightBaseBluetoothActivity.byteArrayToInt(len);
-	                    	if(buffer.length>=bytes)
-	                    	{
-	                    		mmInStream.read(buffer, 0, bytes);
-	                    		//myHandler.obtainMessage(999,5,bytes).sendToTarget();
-	                    	}
-	                    	else{
-	                    		//myHandler.obtainMessage(999,4,bytes).sendToTarget();
-	                    		//continue;
-	                    	}
-	                    	if(bytes==1)//控制信息流
-	                    	{
-                    		
-	                    		switch (buffer[0]) {
-	                    		case -1://服务器端已接收到名字,
-	                    			sendtoHandler(myHandler, -1, 0, 0, null);
-	                    			//myHandler.obtainMessage(-1).sendToTarget();
-	                    			break;
-	    						case -2://服务器尚未开始
-	    							sendtoHandler(myHandler, -2, 0, 0, null);
-	    							//myHandler.obtainMessage(-2).sendToTarget();
-	    							break;
-	    						case -3://服务器正在计算或轮到服务器出招
-	    							sendtoHandler(myHandler, -3, 0, 0, null);
-	    							//myHandler.obtainMessage(-3).sendToTarget();
-	    							break;
-	    						case -4://服务器告知客户端战斗结束
-	    							sendtoHandler(myHandler, -4, 0, 0, null);
-	    							//myHandler.obtainMessage(-4).sendToTarget();
-	    							break;
-	    						case -5://服务器告知客户端可以出招
-	    							sendtoHandler(myHandler, 12, 0, 0, null);
-	    							//myHandler.obtainMessage(12).sendToTarget();
-	    							break;
-	    						case -6://服务器端通知客户端修改游戏模式
-	    							sendtoHandler(myHandler, -6, 0, 0, null);
-	    							//myHandler.obtainMessage(-6).sendToTarget();
-	    							break;
-	    						case -15:sendtoHandler(myHandler, 11, 0, 0, null);break;
-	    						case -14:sendtoHandler(myHandler, 11, 1, 0, null);break;
-	    						case -13:sendtoHandler(myHandler, 11, 2, 0, null);break;
-	    						case -12:sendtoHandler(myHandler, 11, 3, 0, null);break;
-	    						case -11:sendtoHandler(myHandler, 11, 4, 0, null);break;
-	    						case -10:sendtoHandler(myHandler, 11, 5, 0, null);break;
-	    						default://sendtoHandler(myHandler,11,(int)(15+buffer[0]), 0, null);
-	    							//myHandler.obtainMessage(11,(int)(15+buffer[0])).sendToTarget();
-	    							break;
-	                    		}
-	                    	}
-	                    	else
-	                    	{
-	                    		String aString="";
-	                    		try{
-	                    			aString=new String(buffer,0,bytes,"UTF-8");
-    							
-	                    		} catch (UnsupportedEncodingException e) {
-	                    			// TODO 自动生成的 catch 块
-    							
-	                    		}
-	                    		Message msg = new Message();
-	                    		Bundle data = new Bundle();
-	            				 data.putString("fightdsp",aString);
-	            				 msg.what = FightBaseBluetoothActivity.Message;
-	            				 msg.setData(data);
-	            				 myHandler.sendMessage(msg);
-	                    		//myHandler.obtainMessage(FightBaseBluetoothActivity.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
-	                            //.sendToTarget();
-	                    	}
-                        
-                    	
-                        
-		                    } catch (IOException e) {
-		                        e.printStackTrace();
-		                        break;
-		                    }
-            			}
+            		
+	            		synchronized (mmInStream) {
+	            			try {
+		                    	byte[]len=new byte[4];
+		                    	mmInStream.read(len,0,4);
+		                    	bytes=FightBaseBluetoothActivity.byteArrayToInt(len);
+		                    	if(buffer.length>=bytes)
+		                    	{
+		                    		mmInStream.read(buffer, 0, bytes);
+		                    		//myHandler.obtainMessage(999,5,bytes).sendToTarget();
+		                    	}
+		                    	else{
+		                    		//myHandler.obtainMessage(999,4,bytes).sendToTarget();
+		                    		//continue;
+		                    	}
+		                    	if(bytes==1)//控制信息流
+		                    	{
+	                    		
+		                    		switch (buffer[0]) {
+		                    		case -1://服务器端已接收到名字,
+		                    			sendtoHandler(myHandler, -1, 0, 0, null);
+		                    			//myHandler.obtainMessage(-1).sendToTarget();
+		                    			break;
+		    						case -2://服务器尚未开始
+		    							sendtoHandler(myHandler, -2, 0, 0, null);
+		    							//myHandler.obtainMessage(-2).sendToTarget();
+		    							break;
+		    						case -3://服务器正在计算或轮到服务器出招
+		    							sendtoHandler(myHandler, -3, 0, 0, null);
+		    							//myHandler.obtainMessage(-3).sendToTarget();
+		    							break;
+		    						case -4://服务器告知客户端战斗结束
+		    							sendtoHandler(myHandler, -4, 0, 0, null);
+		    							//myHandler.obtainMessage(-4).sendToTarget();
+		    							break;
+		    						case -5://服务器告知客户端可以出招
+		    							sendtoHandler(myHandler, 12, 0, 0, null);
+		    							//myHandler.obtainMessage(12).sendToTarget();
+		    							break;
+		    						case -6://服务器端通知客户端修改游戏模式
+		    							sendtoHandler(myHandler, -6, 0, 0, null);
+		    							//myHandler.obtainMessage(-6).sendToTarget();
+		    							break;
+		    						case -7://断开连接
+		    							myHandler.obtainMessage(999,999,0).sendToTarget();
+		    							break;
+		    						case -8://尝试新链接
+		    							myHandler.obtainMessage(999,99,0).sendToTarget();
+		    							break;
+		    						case -15:sendtoHandler(myHandler, 11, 0, 0, null);break;
+		    						case -14:sendtoHandler(myHandler, 11, 1, 0, null);break;
+		    						case -13:sendtoHandler(myHandler, 11, 2, 0, null);break;
+		    						case -12:sendtoHandler(myHandler, 11, 3, 0, null);break;
+		    						case -11:sendtoHandler(myHandler, 11, 4, 0, null);break;
+		    						case -10:sendtoHandler(myHandler, 11, 5, 0, null);break;
+		    						default://sendtoHandler(myHandler,11,(int)(15+buffer[0]), 0, null);
+		    							//myHandler.obtainMessage(11,(int)(15+buffer[0])).sendToTarget();
+		    							break;
+		                    		}
+		                    	}
+		                    	else
+		                    	{
+		                    		String aString="";
+		                    		try{
+		                    			aString=new String(buffer,0,bytes,"UTF-8");
+	    							
+		                    		} catch (UnsupportedEncodingException e) {
+		                    			// TODO 自动生成的 catch 块
+	    							
+		                    		}
+		                    		Message msg = new Message();
+		                    		Bundle data = new Bundle();
+		            				 data.putString("fightdsp",aString);
+		            				 msg.what = FightBaseBluetoothActivity.Message;
+		            				 msg.setData(data);
+		            				 myHandler.sendMessage(msg);
+		                    		//myHandler.obtainMessage(FightBaseBluetoothActivity.Message, bytes, -1, buffer)//把数据长度和数据发送给主线程
+		                            //.sendToTarget();
+		                    	}
+	                        
+	                    	
+	                        
+			                    } catch (IOException e) {
+			                        e.printStackTrace();
+			                        break;
+			                    }
+	            			}
+            		
             	}
                 
             
         }
         //向输出流中写入数据的方法
-        public synchronized void write(byte[] out) {
+        @SuppressLint("NewApi") public synchronized void write(byte[] out) {
         		try {
         			
         			myOs.write(out);
         		} catch (IOException e) {
         			e.printStackTrace();
         		}
+        	
         }
         
         public void cancel() {
